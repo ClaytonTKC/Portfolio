@@ -1,0 +1,78 @@
+{
+    "nav": {
+        "home": "Accueil",
+        "testimonials": "Témoignages",
+        "contact": "Contact",
+        "admin": "Admin",
+        "dashboard": "Tableau de Bord",
+        "logout": "Déconnexion"
+    },
+    "hero": {
+        "greeting": "Bonjour, je suis",
+        "title": "Développeur Full Stack",
+        "subtitle": "Créer des expériences numériques avec passion et précision. Je construis des applications web modernes qui ravissent les utilisateurs et génèrent des résultats.",
+        "cta": "Voir Mes Projets",
+        "contact": "Me Contacter",
+        "resume": "Télécharger CV"
+    },
+    "skills": {
+        "title": "Compétences & Expertise",
+        "subtitle": "Technologies et outils que j'utilise pour donner vie aux idées"
+    },
+    "projects": {
+        "title": "Projets en Vedette",
+        "subtitle": "Une sélection de mes travaux récents et projets personnels",
+        "viewProject": "Voir le Projet",
+        "viewCode": "Voir le Code"
+    },
+    "experience": {
+        "title": "Expérience Professionnelle",
+        "subtitle": "Mon parcours professionnel et mes réalisations",
+        "present": "Présent"
+    },
+    "education": {
+        "title": "Formation",
+        "subtitle": "Parcours académique et certifications"
+    },
+    "hobbies": {
+        "title": "Loisirs & Intérêts",
+        "subtitle": "Ce que j'aime faire en dehors du travail"
+    },
+    "testimonials": {
+        "title": "Témoignages",
+        "subtitle": "Ce que les gens disent de travailler avec moi",
+        "submit": "Soumettre un Témoignage",
+        "form": {
+            "name": "Votre Nom",
+            "role": "Votre Rôle/Entreprise",
+            "message": "Votre Témoignage",
+            "rating": "Note",
+            "submit": "Soumettre le Témoignage",
+            "success": "Merci! Votre témoignage a été soumis pour examen.",
+            "error": "Échec de la soumission du témoignage. Veuillez réessayer."
+        }
+    },
+    "contact": {
+        "title": "Me Contacter",
+        "subtitle": "Vous avez un projet en tête? Parlons-en",
+        "name": "Votre Nom",
+        "email": "Votre Email",
+        "message": "Votre Message",
+        "send": "Envoyer le Message",
+        "success": "Message envoyé avec succès!",
+        "error": "Échec de l'envoi du message. Veuillez réessayer."
+    },
+    "admin": {
+        "login": "Connexion Admin",
+        "email": "Email",
+        "password": "Mot de passe",
+        "signIn": "Se Connecter",
+        "dashboard": "Tableau de Bord",
+        "welcome": "Bienvenue, Admin",
+        "manageContent": "Gérez le contenu de votre portfolio"
+    },
+    "footer": {
+        "rights": "Tous droits réservés",
+        "builtWith": "Construit avec"
+    }
+}

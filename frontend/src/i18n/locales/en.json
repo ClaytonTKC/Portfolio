@@ -1,0 +1,78 @@
+{
+  "nav": {
+    "home": "Home",
+    "testimonials": "Testimonials",
+    "contact": "Contact",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "logout": "Logout"
+  },
+  "hero": {
+    "greeting": "Hello, I'm",
+    "title": "Full Stack Developer",
+    "subtitle": "Crafting digital experiences with passion and precision. I build modern web applications that delight users and drive results.",
+    "cta": "View My Work",
+    "contact": "Get In Touch",
+    "resume": "Download CV"
+  },
+  "skills": {
+    "title": "Skills & Expertise",
+    "subtitle": "Technologies and tools I work with to bring ideas to life"
+  },
+  "projects": {
+    "title": "Featured Projects",
+    "subtitle": "A selection of my recent work and personal projects",
+    "viewProject": "View Project",
+    "viewCode": "View Code"
+  },
+  "experience": {
+    "title": "Work Experience",
+    "subtitle": "My professional journey and career highlights",
+    "present": "Present"
+  },
+  "education": {
+    "title": "Education",
+    "subtitle": "Academic background and certifications"
+  },
+  "hobbies": {
+    "title": "Hobbies & Interests",
+    "subtitle": "What I enjoy doing outside of work"
+  },
+  "testimonials": {
+    "title": "Testimonials",
+    "subtitle": "What people say about working with me",
+    "submit": "Submit a Testimonial",
+    "form": {
+      "name": "Your Name",
+      "role": "Your Role/Company",
+      "message": "Your Testimonial",
+      "rating": "Rating",
+      "submit": "Submit Testimonial",
+      "success": "Thank you! Your testimonial has been submitted for review.",
+      "error": "Failed to submit testimonial. Please try again."
+    }
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "Have a project in mind? Let's talk about it",
+    "name": "Your Name",
+    "email": "Your Email",
+    "message": "Your Message",
+    "send": "Send Message",
+    "success": "Message sent successfully!",
+    "error": "Failed to send message. Please try again."
+  },
+  "admin": {
+    "login": "Admin Login",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "dashboard": "Dashboard",
+    "welcome": "Welcome back, Admin",
+    "manageContent": "Manage your portfolio content"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "builtWith": "Built with"
+  }
+}

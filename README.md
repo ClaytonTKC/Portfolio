@@ -1,0 +1,181 @@
+# Portfolio Platform
+
+A dynamic, multi-tenant portfolio platform built with modern technologies.
+
+## Tech Stack
+
+- **Frontend**: React + Vite + TypeScript + TailwindCSS
+- **Backend**: Go + Gin
+- **Database**: PostgreSQL
+- **Containerization**: Docker + Docker Compose
+
+## Features
+
+- 🎨 Modern, responsive design with glassmorphism effects
+- 🌍 Bilingual support (English/French)
+- 👤 User authentication and role-based access
+- 📊 Dashboard for portfolio management
+- 💼 Sections: Skills, Projects, Experience, Education, Testimonials
+- 📧 Contact form functionality
+- 🔐 Secure API with JWT authentication
+
+## Getting Started
+
+### Prerequisites
+
+- Docker and Docker Compose
+- Node.js 20+ (for local frontend development)
+- Go 1.21+ (for local backend development)
+
+### Quick Start with Docker
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd Portfolio
+   ```
+
+2. Start all services:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. Access the application:
+   - Frontend: http://localhost:5173
+   - Backend API: http://localhost:8080
+   - Database: localhost:5432
+
+### Local Development
+
+#### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+#### Backend
+
+```bash
+cd backend
+cp .env.example .env
+go mod tidy
+go run ./cmd/server
+```
+
+## Project Structure
+
+```
+Portfolio/
+├── frontend/                 # React frontend
+│   ├── src/
+│   │   ├── components/      # Reusable UI components
+│   │   │   ├── layout/      # Header, Footer, Layout
+│   │   │   ├── sections/    # Hero, Skills, Projects, etc.
+│   │   │   └── ui/          # Button, Card, etc.
+│   │   ├── pages/           # Page components
+│   │   ├── i18n/            # Internationalization
+│   │   └── styles/          # Global CSS
+│   ├── Dockerfile
+│   └── package.json
+│
+├── backend/                  # Go backend
+│   ├── cmd/server/          # Main entry point
+│   ├── internal/
+│   │   ├── config/          # Configuration
+│   │   ├── handler/         # HTTP handlers
+│   │   ├── model/           # Data models
+│   │   ├── repository/      # Database layer
+│   │   └── middleware/      # HTTP middleware
+│   ├── Dockerfile
+│   └── go.mod
+│
+├── database/                 # Database files
+│   ├── migrations/          # SQL migrations
+│   └── init.sql             # Initialization script
+│
+├── docker-compose.yml        # Development compose
+├── docker-compose.prod.yml   # Production compose
+└── README.md
+```
+
+## API Endpoints
+
+### Health
+- `GET /api/health` - Health check
+
+### Users
+- `POST /api/users` - Create user
+- `GET /api/users/:id` - Get user by ID
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
+
+### Portfolios
+- `GET /api/portfolios` - List all portfolios
+- `GET /api/portfolios/:username` - Get portfolio by username
+
+### Skills
+- `GET /api/skills/user/:userId` - Get user's skills
+- `POST /api/skills` - Create skill
+- `PUT /api/skills/:id` - Update skill
+- `DELETE /api/skills/:id` - Delete skill
+
+### Projects
+- `GET /api/projects/user/:userId` - Get user's projects
+- `POST /api/projects` - Create project
+- `PUT /api/projects/:id` - Update project
+- `DELETE /api/projects/:id` - Delete project
+
+### Experience
+- `GET /api/experience/user/:userId` - Get user's experience
+- `POST /api/experience` - Create experience
+- `PUT /api/experience/:id` - Update experience
+- `DELETE /api/experience/:id` - Delete experience
+
+### Education
+- `GET /api/education/user/:userId` - Get user's education
+- `POST /api/education` - Create education
+- `PUT /api/education/:id` - Update education
+- `DELETE /api/education/:id` - Delete education
+
+### Testimonials
+- `GET /api/testimonials/user/:userId` - Get user's testimonials
+- `POST /api/testimonials` - Create testimonial
+- `PUT /api/testimonials/:id` - Update testimonial
+- `DELETE /api/testimonials/:id` - Delete testimonial
+- `PUT /api/testimonials/:id/approve` - Approve testimonial
+
+### Contact
+- `POST /api/contact` - Send message
+- `GET /api/contact/messages/:userId` - Get user's messages
+
+## Environment Variables
+
+### Backend
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Server port | `8080` |
+| `DATABASE_URL` | PostgreSQL connection string | - |
+| `JWT_SECRET` | JWT signing secret | - |
+| `ENVIRONMENT` | Environment mode | `development` |
+
+### Frontend
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_URL` | Backend API URL | `http://localhost:8080/api` |
+
+## Production Deployment
+
+```bash
+# Set environment variables
+export POSTGRES_PASSWORD=your-secure-password
+export JWT_SECRET=your-jwt-secret
+
+# Deploy with production compose
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+## License
+
+MIT

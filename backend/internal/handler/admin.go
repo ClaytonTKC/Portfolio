@@ -55,7 +55,7 @@ func (h *AdminHandler) GetContactInfo(c *gin.Context) {
 	// Placeholder
 	info := model.ContactInfo{
 		ID:       "1",
-		Email:    "john@example.com",
+		Email:    "claudio@portfolio.com",
 		Phone:    "+1 234 567 8900",
 		Location: "Montreal, Quebec, Canada",
 		LinkedIn: "johndoe",

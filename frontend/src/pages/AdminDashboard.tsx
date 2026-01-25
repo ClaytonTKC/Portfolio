@@ -1,10 +1,18 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { authService } from '../services/auth.service';
 
 export const AdminDashboard: React.FC = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        authService.logout();
+        navigate('/');
+    };
 
     const menuItems = [
         { icon: '💼', label: 'Skills', count: 10, path: '/admin/skills' },
@@ -24,7 +32,7 @@ export const AdminDashboard: React.FC = () => {
     ];
 
     const recentMessages = [
-        { id: '1', name: 'Clay Smith', email: 'john@example.com', subject: 'Project inquiry', date: '1 hour ago' },
+        { id: '1', name: 'Clay Smith', email: 'Clay@example.com', subject: 'Project inquiry', date: '1 hour ago' },
         { id: '2', name: 'Jane Doe', email: 'jane@example.com', subject: 'Collaboration opportunity', date: '3 hours ago' },
     ];
 
@@ -76,7 +84,10 @@ export const AdminDashboard: React.FC = () => {
                                     <span>🌐</span>
                                     <span>View Portfolio</span>
                                 </a>
-                                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[var(--color-error)] hover:bg-[var(--color-surface)] transition-colors">
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                                >
                                     <span>🚪</span>
                                     <span>{t('nav.logout')}</span>
                                 </button>

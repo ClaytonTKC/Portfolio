@@ -1,21 +1,39 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
+import { authService } from '../services/auth.service';
 
 export const AdminLogin: React.FC = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Placeholder - would authenticate with backend
-        console.log('Admin login:', formData);
-        // On success, redirect to dashboard
-        window.location.href = '/admin/dashboard';
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const response = await authService.login(formData);
+
+            // Store token and user info
+            localStorage.setItem('admin_token', response.token);
+            localStorage.setItem('admin_user', JSON.stringify(response.admin));
+
+            // Redirect to dashboard
+            navigate('/admin/dashboard');
+        } catch (err: any) {
+            console.error('Login failed:', err);
+            setError(err.response?.data?.error || 'Failed to login. Please check your credentials.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,6 +56,13 @@ export const AdminLogin: React.FC = () => {
                             </p>
                         </div>
 
+                        {/* Error Message */}
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 text-red-500 px-4 py-3 rounded-lg mb-6 text-sm">
+                                {error}
+                            </div>
+                        )}
+
                         {/* Form */}
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
@@ -53,6 +78,7 @@ export const AdminLogin: React.FC = () => {
                                     required
                                     className="form-input"
                                     placeholder="admin@example.com"
+                                    disabled={isLoading}
                                 />
                             </div>
 
@@ -69,11 +95,17 @@ export const AdminLogin: React.FC = () => {
                                     required
                                     className="form-input"
                                     placeholder="••••••••"
+                                    disabled={isLoading}
                                 />
                             </div>
 
-                            <Button type="submit" variant="primary" className="w-full">
-                                {t('admin.signIn')}
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                className="w-full"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'Signing in...' : t('admin.signIn')}
                             </Button>
                         </form>
                     </div>

@@ -7,7 +7,7 @@ import { Button } from '../components/ui/Button';
 const approvedTestimonials = [
     {
         id: '1',
-        name: 'Sarah Clayson',
+        name: 'Sarah Johnson',
         role: 'CTO, Tech Startup',
         content: 'Working with Clay was an absolute pleasure. His technical expertise and problem-solving skills are outstanding. He delivered our project ahead of schedule and exceeded all expectations.',
         rating: 5,

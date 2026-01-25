@@ -35,8 +35,8 @@ export const Header: React.FC = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`relative py-2 px-1 font-medium transition-colors ${isActive(item.path)
-                                        ? 'text-[var(--color-primary)]'
-                                        : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
+                                    ? 'text-[var(--color-primary)]'
+                                    : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
                                     }`}
                             >
                                 {item.label}
@@ -50,12 +50,7 @@ export const Header: React.FC = () => {
                     {/* Right side actions */}
                     <div className="flex items-center gap-4">
                         <LanguageToggle />
-                        <Link
-                            to="/admin"
-                            className="hidden md:inline-flex btn-secondary text-sm py-2 px-4"
-                        >
-                            {t('nav.admin')}
-                        </Link>
+
 
                         {/* Mobile menu button */}
                         <button
@@ -100,20 +95,14 @@ export const Header: React.FC = () => {
                                 to={item.path}
                                 onClick={() => setIsMenuOpen(false)}
                                 className={`block py-3 px-4 rounded-lg font-medium transition-colors ${isActive(item.path)
-                                        ? 'bg-[var(--color-surface)] text-[var(--color-primary)]'
-                                        : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]'
+                                    ? 'bg-[var(--color-surface)] text-[var(--color-primary)]'
+                                    : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]'
                                     }`}
                             >
                                 {item.label}
                             </Link>
                         ))}
-                        <Link
-                            to="/admin"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="block mt-4 text-center btn-secondary"
-                        >
-                            {t('nav.admin')}
-                        </Link>
+
                     </nav>
                 )}
             </div>

@@ -5,6 +5,7 @@ import { TestimonialsPage } from './pages/Testimonials';
 import { ContactPage } from './pages/Contact';
 import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import './i18n';
 
 function App() {
@@ -20,7 +21,11 @@ function App() {
 
         {/* Admin routes */}
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+
+        {/* Protected Admin Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

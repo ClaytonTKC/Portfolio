@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -38,6 +39,12 @@ func main() {
 
 	// Initialize router
 	r := gin.Default()
+	
+	if cfg.TrustedProxies != "" {
+		r.SetTrustedProxies(strings.Split(cfg.TrustedProxies, ","))
+	} else {
+		r.SetTrustedProxies(nil)
+	}
 
 	// Configure CORS
 	r.Use(cors.New(cors.Config{

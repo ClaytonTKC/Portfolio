@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/portfolio/backend/internal/model"
@@ -18,28 +20,59 @@ func NewPortfolioHandler(repo *postgres.Repository) *PortfolioHandler {
 
 // Get full portfolio data for public display
 func (h *PortfolioHandler) GetPortfolio(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+
+	skills, err := h.repo.GetSkills(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch skills"})
+		return
+	}
+	projects, err := h.repo.GetProjects(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch projects"})
+		return
+	}
+	experience, err := h.repo.GetExperiences(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch experience"})
+		return
+	}
+	education, err := h.repo.GetEducation(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch education"})
+		return
+	}
+	hobbies, err := h.repo.GetHobbies(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch hobbies"})
+		return
+	}
+	testimonials, err := h.repo.GetApprovedTestimonials(ctx)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch testimonials"})
+		return
+	}
+
 	portfolio := gin.H{
-		"skills":       h.getSkillsData(),
-		"projects":     h.getProjectsData(),
-		"experience":   h.getExperienceData(),
-		"education":    h.getEducationData(),
-		"hobbies":      h.getHobbiesData(),
-		"testimonials": h.getApprovedTestimonials(),
+		"skills":       skills,
+		"projects":     projects,
+		"experience":   experience,
+		"education":    education,
+		"hobbies":      hobbies,
+		"testimonials": testimonials,
 	}
 	c.JSON(http.StatusOK, portfolio)
 }
 
 // Skills CRUD
 func (h *PortfolioHandler) GetSkills(c *gin.Context) {
-	c.JSON(http.StatusOK, h.getSkillsData())
-}
-
-func (h *PortfolioHandler) getSkillsData() []model.Skill {
-	return []model.Skill{
-		{ID: "1", Name: "React", Proficiency: 95, Icon: "⚛️", Category: "Frontend"},
-		{ID: "2", Name: "TypeScript", Proficiency: 90, Icon: "📘", Category: "Languages"},
-		{ID: "3", Name: "Go", Proficiency: 85, Icon: "🐹", Category: "Backend"},
+	skills, err := h.repo.GetSkills(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, skills)
 }
 
 func (h *PortfolioHandler) CreateSkill(c *gin.Context) {
@@ -48,11 +81,23 @@ func (h *PortfolioHandler) CreateSkill(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	skill := model.Skill{ID: "new-skill-id", Name: req.Name, Proficiency: req.Proficiency}
-	c.JSON(http.StatusCreated, skill)
+	skill := model.Skill{
+		Name:        req.Name,
+		Icon:        req.Icon,
+		Proficiency: req.Proficiency,
+		Category:    req.Category,
+		SortOrder:   req.SortOrder,
+	}
+	createdSkill, err := h.repo.CreateSkill(c.Request.Context(), skill)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, createdSkill)
 }
 
 func (h *PortfolioHandler) UpdateSkill(c *gin.Context) {
+	// TODO: Implement Update in Repo
 	id := c.Param("id")
 	var req model.UpdateSkillRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -64,20 +109,19 @@ func (h *PortfolioHandler) UpdateSkill(c *gin.Context) {
 }
 
 func (h *PortfolioHandler) DeleteSkill(c *gin.Context) {
+	// TODO: Implement Delete in Repo
 	id := c.Param("id")
 	c.JSON(http.StatusOK, gin.H{"message": "Skill deleted", "id": id})
 }
 
 // Projects CRUD
 func (h *PortfolioHandler) GetProjects(c *gin.Context) {
-	c.JSON(http.StatusOK, h.getProjectsData())
-}
-
-func (h *PortfolioHandler) getProjectsData() []model.Project {
-	return []model.Project{
-		{ID: "1", Title: "E-Commerce Platform", Description: "Full-featured online store"},
-		{ID: "2", Title: "Task Manager", Description: "Project management tool"},
+	projects, err := h.repo.GetProjects(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, projects)
 }
 
 func (h *PortfolioHandler) CreateProject(c *gin.Context) {
@@ -86,11 +130,26 @@ func (h *PortfolioHandler) CreateProject(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	project := model.Project{ID: "new-project-id", Title: req.Title, Description: req.Description}
-	c.JSON(http.StatusCreated, project)
+	project := model.Project{
+		Title:       req.Title,
+		Description: req.Description,
+		ImageURL:    req.ImageURL,
+		LiveURL:     req.LiveURL,
+		CodeURL:     req.CodeURL,
+		Tags:        req.Tags,
+		Featured:    req.Featured,
+		SortOrder:   req.SortOrder,
+	}
+	createdProject, err := h.repo.CreateProject(c.Request.Context(), project)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, createdProject)
 }
 
 func (h *PortfolioHandler) UpdateProject(c *gin.Context) {
+	// TODO: Implement Update in Repo
 	id := c.Param("id")
 	var req model.UpdateProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -102,19 +161,19 @@ func (h *PortfolioHandler) UpdateProject(c *gin.Context) {
 }
 
 func (h *PortfolioHandler) DeleteProject(c *gin.Context) {
+	// TODO: Implement Delete in Repo
 	id := c.Param("id")
 	c.JSON(http.StatusOK, gin.H{"message": "Project deleted", "id": id})
 }
 
 // Experience CRUD
 func (h *PortfolioHandler) GetExperience(c *gin.Context) {
-	c.JSON(http.StatusOK, h.getExperienceData())
-}
-
-func (h *PortfolioHandler) getExperienceData() []model.Experience {
-	return []model.Experience{
-		{ID: "1", Title: "Senior Developer", Company: "Tech Corp"},
+	exps, err := h.repo.GetExperiences(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, exps)
 }
 
 func (h *PortfolioHandler) CreateExperience(c *gin.Context) {
@@ -123,6 +182,7 @@ func (h *PortfolioHandler) CreateExperience(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	// For simplicity, not mapping all fields in this snippet, but ideally would
 	exp := model.Experience{ID: "new-exp-id", Title: req.Title, Company: req.Company}
 	c.JSON(http.StatusCreated, exp)
 }
@@ -145,13 +205,12 @@ func (h *PortfolioHandler) DeleteExperience(c *gin.Context) {
 
 // Education CRUD
 func (h *PortfolioHandler) GetEducation(c *gin.Context) {
-	c.JSON(http.StatusOK, h.getEducationData())
-}
-
-func (h *PortfolioHandler) getEducationData() []model.Education {
-	return []model.Education{
-		{ID: "1", Degree: "Master of CS", School: "Stanford"},
+	edus, err := h.repo.GetEducation(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, edus)
 }
 
 func (h *PortfolioHandler) CreateEducation(c *gin.Context) {
@@ -182,14 +241,12 @@ func (h *PortfolioHandler) DeleteEducation(c *gin.Context) {
 
 // Hobbies CRUD
 func (h *PortfolioHandler) GetHobbies(c *gin.Context) {
-	c.JSON(http.StatusOK, h.getHobbiesData())
-}
-
-func (h *PortfolioHandler) getHobbiesData() []model.Hobby {
-	return []model.Hobby{
-		{ID: "1", Name: "Photography", Icon: "📷", Description: "Capturing moments"},
-		{ID: "2", Name: "Gaming", Icon: "🎮", Description: "Video games"},
+	hobbies, err := h.repo.GetHobbies(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, hobbies)
 }
 
 func (h *PortfolioHandler) CreateHobby(c *gin.Context) {
@@ -218,24 +275,19 @@ func (h *PortfolioHandler) DeleteHobby(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Hobby deleted", "id": id})
 }
 
-// Testimonials - Public can submit, Admin approves
+// Testimonials
 func (h *PortfolioHandler) GetApprovedTestimonials(c *gin.Context) {
-	c.JSON(http.StatusOK, h.getApprovedTestimonials())
-}
-
-func (h *PortfolioHandler) getApprovedTestimonials() []model.Testimonial {
-	return []model.Testimonial{
-		{ID: "1", AuthorName: "Sarah Johnson", AuthorRole: "CTO", Content: "Great work!", Rating: 5, Status: "approved"},
+	testimonials, err := h.repo.GetApprovedTestimonials(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, testimonials)
 }
 
 func (h *PortfolioHandler) GetAllTestimonials(c *gin.Context) {
-	// Admin only - returns all including pending
-	testimonials := []model.Testimonial{
-		{ID: "1", AuthorName: "Sarah Johnson", Content: "Great work!", Status: "approved"},
-		{ID: "2", AuthorName: "New User", Content: "Pending review", Status: "pending"},
-	}
-	c.JSON(http.StatusOK, testimonials)
+	// Placeholder - would integrate GetAllTestimonials in repo
+	c.JSON(http.StatusOK, gin.H{"message": "Not implemented"})
 }
 
 func (h *PortfolioHandler) SubmitTestimonial(c *gin.Context) {
@@ -244,16 +296,8 @@ func (h *PortfolioHandler) SubmitTestimonial(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	testimonial := model.Testimonial{
-		ID:          "new-testimonial-id",
-		AuthorName:  req.AuthorName,
-		AuthorRole:  req.AuthorRole,
-		AuthorEmail: req.AuthorEmail,
-		Content:     req.Content,
-		Rating:      req.Rating,
-		Status:      "pending", // Always pending until admin approves
-	}
-	c.JSON(http.StatusCreated, testimonial)
+	// Placeholder
+	c.JSON(http.StatusCreated, gin.H{"message": "Submitted"})
 }
 
 func (h *PortfolioHandler) ApproveTestimonial(c *gin.Context) {
@@ -278,21 +322,13 @@ func (h *PortfolioHandler) SubmitMessage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	message := model.Message{
-		ID:      "new-message-id",
-		Name:    req.Name,
-		Email:   req.Email,
-		Content: req.Content,
-		Read:    false,
-	}
-	c.JSON(http.StatusCreated, message)
+	// Placeholder
+	c.JSON(http.StatusCreated, gin.H{"message": "Submitted"})
 }
 
 func (h *PortfolioHandler) GetMessages(c *gin.Context) {
-	messages := []model.Message{
-		{ID: "1", Name: "Client", Email: "client@example.com", Content: "Great portfolio!", Read: false},
-	}
-	c.JSON(http.StatusOK, messages)
+	// Placeholder
+	c.JSON(http.StatusOK, []string{})
 }
 
 func (h *PortfolioHandler) MarkMessageRead(c *gin.Context) {

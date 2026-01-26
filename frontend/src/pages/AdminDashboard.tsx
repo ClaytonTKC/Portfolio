@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { authService } from '../services/auth.service';
+import { AddProjectModal } from '../components/admin/AddProjectModal';
+import { AddSkillModal } from '../components/admin/AddSkillModal';
 
 export const AdminDashboard: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const [activeModal, setActiveModal] = useState<'project' | 'skill' | null>(null);
 
     const handleLogout = () => {
         authService.logout();
@@ -101,8 +104,18 @@ export const AdminDashboard: React.FC = () => {
                         <Card hover={false}>
                             <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
                             <div className="flex flex-wrap gap-3">
-                                <Button variant="primary">Add Project</Button>
-                                <Button variant="secondary">Add Skill</Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={() => setActiveModal('project')}
+                                >
+                                    Add Project
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    onClick={() => setActiveModal('skill')}
+                                >
+                                    Add Skill
+                                </Button>
                                 <Button variant="secondary">Update Resume</Button>
                                 <Button variant="secondary">Edit Contact Info</Button>
                             </div>
@@ -173,6 +186,16 @@ export const AdminDashboard: React.FC = () => {
                         </Card>
                     </div>
                 </div>
+
+                {/* Modals */}
+                <AddProjectModal
+                    isOpen={activeModal === 'project'}
+                    onClose={() => setActiveModal(null)}
+                />
+                <AddSkillModal
+                    isOpen={activeModal === 'skill'}
+                    onClose={() => setActiveModal(null)}
+                />
             </div>
         </div>
     );

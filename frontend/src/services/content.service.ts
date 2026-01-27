@@ -32,5 +32,16 @@ export const contentService = {
     async createSkill(skill: Skill): Promise<Skill> {
         const response = await client.post<Skill>('/admin/skills', skill);
         return response.data;
+    },
+
+    // Public Data Fetching
+    async getProjects(): Promise<Project[]> {
+        const response = await client.get<Project[]>('/public/projects');
+        return response.data;
+    },
+
+    async getSkills(): Promise<Skill[]> {
+        const response = await client.get<Skill[]>('/public/skills');
+        return response.data;
     }
 };

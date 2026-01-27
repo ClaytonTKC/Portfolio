@@ -4,8 +4,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/portfolio/backend/internal/middleware"
 	"github.com/portfolio/backend/internal/model"
 	"github.com/portfolio/backend/internal/repository/postgres"
+	"time"
 )
 
 type AdminHandler struct {
@@ -26,13 +28,21 @@ func (h *AdminHandler) Login(c *gin.Context) {
 	// Placeholder - would verify credentials against database
 	// For now, using placeholder credentials
 	if req.Email == "admin@portfolio.com" && req.Password == "admin123" {
+		user := &model.Admin{
+			ID:    "admin-1",
+			Email: req.Email,
+			Name:  "Portfolio Admin",
+		}
+
+		token, err := middleware.GenerateToken(user, time.Hour)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+
 		response := model.AdminLoginResponse{
-			Token: "placeholder-jwt-token",
-			Admin: model.Admin{
-				ID:    "admin-1",
-				Email: req.Email,
-				Name:  "Portfolio Admin",
-			},
+			Token: token,
+			Admin: *user,
 		}
 		c.JSON(http.StatusOK, response)
 		return

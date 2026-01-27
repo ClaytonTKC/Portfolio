@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/portfolio/backend/internal/config"
 	"github.com/portfolio/backend/internal/handler"
+	"github.com/portfolio/backend/internal/middleware"
 	"github.com/portfolio/backend/internal/repository/postgres"
 )
 
@@ -45,6 +46,9 @@ func main() {
 	} else {
 		r.SetTrustedProxies(nil)
 	}
+
+	// Initialize auth
+	middleware.InitAuth(cfg)
 
 	// Configure CORS
 	r.Use(cors.New(cors.Config{
@@ -87,6 +91,7 @@ func main() {
 
 		// Admin routes (would need auth middleware in production)
 		admin := api.Group("/admin")
+		admin.Use(middleware.AuthMiddleware())
 		{
 			admin.GET("/profile", adminHandler.GetProfile)
 			admin.GET("/contact-info", adminHandler.GetContactInfo)

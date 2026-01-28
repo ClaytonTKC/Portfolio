@@ -4,12 +4,26 @@ import { Button } from '../../components/ui/Button';
 import { contentService } from '../../services/content.service';
 import type { Skill } from '../../services/content.service';
 import { AddSkillModal } from '../../components/admin/AddSkillModal';
+import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
+import { StatusModal } from '../../components/ui/StatusModal';
 
 export const ManageSkills: React.FC = () => {
     const [skills, setSkills] = useState<Skill[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSkill, setSelectedSkill] = useState<Skill | undefined>(undefined);
+
+    // Modal states
+    const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; id: string | null }>({
+        isOpen: false,
+        id: null
+    });
+    const [statusModal, setStatusModal] = useState<{ isOpen: boolean; type: 'success' | 'error'; title: string; message: string }>({
+        isOpen: false,
+        type: 'success',
+        title: '',
+        message: ''
+    });
 
     const fetchSkills = async () => {
         try {
@@ -31,14 +45,34 @@ export const ManageSkills: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm('Are you sure you want to delete this skill?')) return;
+    const handleRequestDelete = (id: string) => {
+        setConfirmModal({ isOpen: true, id });
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!confirmModal.id) return;
+
         try {
-            await contentService.deleteSkill(id);
-            setSkills(prev => prev.filter(s => s.id !== id));
-        } catch (error) {
+            await contentService.deleteSkill(confirmModal.id);
+            setSkills(prev => prev.filter(s => s.id !== confirmModal.id));
+            setStatusModal({
+                isOpen: true,
+                type: 'success',
+                title: 'Deleted',
+                message: 'Skill has been successfully deleted.'
+            });
+        } catch (error: any) {
             console.error('Failed to delete skill:', error);
-            alert('Failed to delete skill');
+            if (error.response?.status !== 401) {
+                setStatusModal({
+                    isOpen: true,
+                    type: 'error',
+                    title: 'Error',
+                    message: 'Failed to delete skill. Please try again.'
+                });
+            }
+        } finally {
+            setConfirmModal({ isOpen: false, id: null });
         }
     };
 
@@ -46,6 +80,10 @@ export const ManageSkills: React.FC = () => {
         setIsModalOpen(false);
         setSelectedSkill(undefined);
         fetchSkills(); // Refresh list after add/edit
+    };
+
+    const handleStatusClose = () => {
+        setStatusModal(prev => ({ ...prev, isOpen: false }));
     };
 
     if (isLoading) return <div>Loading...</div>;
@@ -79,7 +117,11 @@ export const ManageSkills: React.FC = () => {
                             <Button variant="secondary" onClick={() => handleEdit(skill)}>
                                 Edit
                             </Button>
-                            <Button variant="secondary" className="!bg-red-500/10 !text-red-500 hover:!bg-red-500/20" onClick={() => handleDelete(skill.id!)}>
+                            <Button
+                                variant="secondary"
+                                className="!bg-red-500/10 !text-red-500 hover:!bg-red-500/20"
+                                onClick={() => handleRequestDelete(skill.id!)}
+                            >
                                 Delete
                             </Button>
                         </div>
@@ -91,6 +133,24 @@ export const ManageSkills: React.FC = () => {
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 skill={selectedSkill}
+            />
+
+            <ConfirmationModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal({ isOpen: false, id: null })}
+                onConfirm={handleConfirmDelete}
+                title="Delete Skill"
+                message="Are you sure you want to delete this skill? This action cannot be undone."
+                confirmLabel="Delete"
+                isDestructive={true}
+            />
+
+            <StatusModal
+                isOpen={statusModal.isOpen}
+                onClose={handleStatusClose}
+                type={statusModal.type}
+                title={statusModal.title}
+                message={statusModal.message}
             />
         </div>
     );

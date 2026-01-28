@@ -4,12 +4,26 @@ import { Button } from '../../components/ui/Button';
 import { contentService } from '../../services/content.service';
 import type { Project } from '../../services/content.service';
 import { AddProjectModal } from '../../components/admin/AddProjectModal';
+import { ConfirmationModal } from '../../components/ui/ConfirmationModal';
+import { StatusModal } from '../../components/ui/StatusModal';
 
 export const ManageProjects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProject, setSelectedProject] = useState<Project | undefined>(undefined);
+
+    // Modal states
+    const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; id: string | null }>({
+        isOpen: false,
+        id: null
+    });
+    const [statusModal, setStatusModal] = useState<{ isOpen: boolean; type: 'success' | 'error'; title: string; message: string }>({
+        isOpen: false,
+        type: 'success',
+        title: '',
+        message: ''
+    });
 
     const fetchProjects = async () => {
         try {
@@ -31,14 +45,34 @@ export const ManageProjects: React.FC = () => {
         setIsModalOpen(true);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!window.confirm('Are you sure you want to delete this project?')) return;
+    const handleRequestDelete = (id: string) => {
+        setConfirmModal({ isOpen: true, id });
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!confirmModal.id) return;
+
         try {
-            await contentService.deleteProject(id);
-            setProjects(prev => prev.filter(p => p.id !== id));
-        } catch (error) {
+            await contentService.deleteProject(confirmModal.id);
+            setProjects(prev => prev.filter(p => p.id !== confirmModal.id));
+            setStatusModal({
+                isOpen: true,
+                type: 'success',
+                title: 'Deleted',
+                message: 'Project has been successfully deleted.'
+            });
+        } catch (error: any) {
             console.error('Failed to delete project:', error);
-            alert('Failed to delete project');
+            if (error.response?.status !== 401) {
+                setStatusModal({
+                    isOpen: true,
+                    type: 'error',
+                    title: 'Error',
+                    message: 'Failed to delete project. Please try again.'
+                });
+            }
+        } finally {
+            setConfirmModal({ isOpen: false, id: null });
         }
     };
 
@@ -46,6 +80,10 @@ export const ManageProjects: React.FC = () => {
         setIsModalOpen(false);
         setSelectedProject(undefined);
         fetchProjects(); // Refresh list after add/edit
+    };
+
+    const handleStatusClose = () => {
+        setStatusModal(prev => ({ ...prev, isOpen: false }));
     };
 
     if (isLoading) return <div>Loading...</div>;
@@ -85,7 +123,11 @@ export const ManageProjects: React.FC = () => {
                             <Button variant="secondary" onClick={() => handleEdit(project)}>
                                 Edit
                             </Button>
-                            <Button variant="secondary" className="!bg-red-500/10 !text-red-500 hover:!bg-red-500/20" onClick={() => handleDelete(project.id!)}>
+                            <Button
+                                variant="secondary"
+                                className="!bg-red-500/10 !text-red-500 hover:!bg-red-500/20"
+                                onClick={() => handleRequestDelete(project.id!)}
+                            >
                                 Delete
                             </Button>
                         </div>
@@ -97,6 +139,24 @@ export const ManageProjects: React.FC = () => {
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 project={selectedProject}
+            />
+
+            <ConfirmationModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal({ isOpen: false, id: null })}
+                onConfirm={handleConfirmDelete}
+                title="Delete Project"
+                message="Are you sure you want to delete this project? This action cannot be undone."
+                confirmLabel="Delete"
+                isDestructive={true}
+            />
+
+            <StatusModal
+                isOpen={statusModal.isOpen}
+                onClose={handleStatusClose}
+                type={statusModal.type}
+                title={statusModal.title}
+                message={statusModal.message}
             />
         </div>
     );

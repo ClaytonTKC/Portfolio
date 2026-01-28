@@ -28,10 +28,28 @@ export const contentService = {
         return response.data;
     },
 
+    async updateProject(id: string, project: Project): Promise<Project> {
+        const response = await client.put<Project>(`/admin/projects/${id}`, project);
+        return response.data;
+    },
+
+    async deleteProject(id: string): Promise<void> {
+        await client.delete(`/admin/projects/${id}`);
+    },
+
     // Skills
     async createSkill(skill: Skill): Promise<Skill> {
         const response = await client.post<Skill>('/admin/skills', skill);
         return response.data;
+    },
+
+    async updateSkill(id: string, skill: Skill): Promise<Skill> {
+        const response = await client.put<Skill>(`/admin/skills/${id}`, skill);
+        return response.data;
+    },
+
+    async deleteSkill(id: string): Promise<void> {
+        await client.delete(`/admin/skills/${id}`);
     },
 
     // Public Data Fetching

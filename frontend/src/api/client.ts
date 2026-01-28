@@ -1,4 +1,6 @@
 import axios from 'axios';
+import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+import { eventBus } from '../utils/eventBus';
 
 // Create axios instance with base URL from environment variables
 const client = axios.create({
@@ -31,7 +33,7 @@ client.interceptors.response.use(
             if (error.response.status === 401) {
                 localStorage.removeItem('admin_token');
                 // Optional: Redirect to login if not already there
-                // window.location.href = '/admin';
+                eventBus.emit('auth:session-expired');
             }
         }
         return Promise.reject(error);

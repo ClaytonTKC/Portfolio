@@ -39,7 +39,7 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 // === Skills ===
 
 func (r *Repository) GetSkills(ctx context.Context) ([]model.Skill, error) {
-	query := `SELECT id, name, icon, proficiency, category, sort_order FROM skills ORDER BY sort_order ASC`
+	query := `SELECT id, name, icon, proficiency, category, sort_order FROM skills ORDER BY proficiency DESC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -65,6 +65,23 @@ func (r *Repository) CreateSkill(ctx context.Context, s model.Skill) (model.Skil
 	`
 	err := r.db.QueryRow(ctx, query, s.Name, s.Icon, s.Proficiency, s.Category, s.SortOrder).Scan(&s.ID, &s.CreatedAt, &s.UpdatedAt)
 	return s, err
+}
+
+func (r *Repository) UpdateSkill(ctx context.Context, s model.Skill) (model.Skill, error) {
+	query := `
+		UPDATE skills 
+		SET name = $1, icon = $2, proficiency = $3, category = $4, sort_order = $5, updated_at = NOW()
+		WHERE id = $6
+		RETURNING created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, s.Name, s.Icon, s.Proficiency, s.Category, s.SortOrder, s.ID).Scan(&s.CreatedAt, &s.UpdatedAt)
+	return s, err
+}
+
+func (r *Repository) DeleteSkill(ctx context.Context, id string) error {
+	query := `DELETE FROM skills WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
 }
 
 // === Projects ===
@@ -96,6 +113,23 @@ func (r *Repository) CreateProject(ctx context.Context, p model.Project) (model.
 	`
 	err := r.db.QueryRow(ctx, query, p.Title, p.Description, p.ImageURL, p.LiveURL, p.CodeURL, p.Tags, p.Featured, p.SortOrder).Scan(&p.ID, &p.CreatedAt, &p.UpdatedAt)
 	return p, err
+}
+
+func (r *Repository) UpdateProject(ctx context.Context, p model.Project) (model.Project, error) {
+	query := `
+		UPDATE projects 
+		SET title = $1, description = $2, image_url = $3, live_url = $4, code_url = $5, tags = $6, featured = $7, sort_order = $8, updated_at = NOW()
+		WHERE id = $9
+		RETURNING created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, p.Title, p.Description, p.ImageURL, p.LiveURL, p.CodeURL, p.Tags, p.Featured, p.SortOrder, p.ID).Scan(&p.CreatedAt, &p.UpdatedAt)
+	return p, err
+}
+
+func (r *Repository) DeleteProject(ctx context.Context, id string) error {
+	query := `DELETE FROM projects WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
 }
 
 // === Experience ===

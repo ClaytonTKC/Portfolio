@@ -97,20 +97,34 @@ func (h *PortfolioHandler) CreateSkill(c *gin.Context) {
 }
 
 func (h *PortfolioHandler) UpdateSkill(c *gin.Context) {
-	// TODO: Implement Update in Repo
 	id := c.Param("id")
 	var req model.UpdateSkillRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	skill := model.Skill{ID: id, Name: req.Name, Proficiency: req.Proficiency}
-	c.JSON(http.StatusOK, skill)
+	skill := model.Skill{
+		ID:          id,
+		Name:        req.Name,
+		Icon:        req.Icon,
+		Proficiency: req.Proficiency,
+		Category:    req.Category,
+		SortOrder:   req.SortOrder,
+	}
+	updatedSkill, err := h.repo.UpdateSkill(c.Request.Context(), skill)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, updatedSkill)
 }
 
 func (h *PortfolioHandler) DeleteSkill(c *gin.Context) {
-	// TODO: Implement Delete in Repo
 	id := c.Param("id")
+	if err := h.repo.DeleteSkill(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Skill deleted", "id": id})
 }
 
@@ -149,20 +163,37 @@ func (h *PortfolioHandler) CreateProject(c *gin.Context) {
 }
 
 func (h *PortfolioHandler) UpdateProject(c *gin.Context) {
-	// TODO: Implement Update in Repo
 	id := c.Param("id")
 	var req model.UpdateProjectRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	project := model.Project{ID: id, Title: req.Title, Description: req.Description}
-	c.JSON(http.StatusOK, project)
+	project := model.Project{
+		ID:          id,
+		Title:       req.Title,
+		Description: req.Description,
+		ImageURL:    req.ImageURL,
+		LiveURL:     req.LiveURL,
+		CodeURL:     req.CodeURL,
+		Tags:        req.Tags,
+		Featured:    req.Featured,
+		SortOrder:   req.SortOrder,
+	}
+	updatedProject, err := h.repo.UpdateProject(c.Request.Context(), project)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, updatedProject)
 }
 
 func (h *PortfolioHandler) DeleteProject(c *gin.Context) {
-	// TODO: Implement Delete in Repo
 	id := c.Param("id")
+	if err := h.repo.DeleteProject(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Project deleted", "id": id})
 }
 

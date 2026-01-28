@@ -5,6 +5,9 @@ import { TestimonialsPage } from './pages/Testimonials';
 import { ContactPage } from './pages/Contact';
 import { AdminLogin } from './pages/AdminLogin';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { AdminLayout } from './components/layout/AdminLayout';
+import { ManageProjects } from './pages/admin/ManageProjects';
+import { ManageSkills } from './pages/admin/ManageSkills';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import './i18n';
 
@@ -24,7 +27,11 @@ function App() {
 
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/skills" element={<ManageSkills />} />
+            <Route path="/admin/projects" element={<ManageProjects />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

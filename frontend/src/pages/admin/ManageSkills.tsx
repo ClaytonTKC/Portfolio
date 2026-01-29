@@ -108,8 +108,6 @@ export const ManageSkills: React.FC = () => {
                                 <h3 className="font-semibold">{skill.name}</h3>
                                 <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
                                     <span>{skill.category || 'General'}</span>
-                                    <span>•</span>
-                                    <span>{skill.proficiency}%</span>
                                 </div>
                             </div>
                         </div>

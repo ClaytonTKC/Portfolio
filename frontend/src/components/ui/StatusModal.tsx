@@ -12,7 +12,7 @@ interface StatusModalProps {
 
 export const StatusModal: React.FC<StatusModalProps> = ({ isOpen, onClose, type, title, message }) => {
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="">
+        <Modal isOpen={isOpen} onClose={onClose} title="" showCloseButton={false}>
             <div className="flex flex-col items-center text-center p-4">
                 <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-4 ${type === 'success' ? 'bg-[var(--color-success)]/10 text-[var(--color-success)]' : 'bg-[var(--color-error)]/10 text-[var(--color-error)]'
                     }`}>

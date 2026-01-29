@@ -62,36 +62,42 @@ export const Skills: React.FC = () => {
                     <p className="section-subtitle">{t('skills.subtitle')}</p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                    {skills.map((skill, index) => (
-                        <div
-                            key={skill.id || skill.name}
-                            className="glass-card p-4 animate-fade-in-up"
-                            style={{ animationDelay: `${index * 0.1}s` }}
-                        >
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-lg bg-[var(--color-surface)] flex items-center justify-center text-2xl">
-                                    {skill.icon || '🔹'}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <span className="font-medium">{skill.name}</span>
-                                        <span className="text-sm text-[var(--color-text-muted)]">
-                                            {skill.proficiency}%
-                                        </span>
+                <div className="max-w-4xl mx-auto space-y-12">
+                    {Object.entries(
+                        skills.reduce((acc, skill) => {
+                            const category = skill.category || 'Other';
+                            if (!acc[category]) acc[category] = [];
+                            acc[category].push(skill);
+                            return acc;
+                        }, {} as Record<string, Skill[]>)
+                    ).map(([category, categorySkills]) => (
+                        <div key={category} className="animate-fade-in-up">
+                            <h3 className="text-2xl font-bold mb-6 text-center md:text-left text-[var(--color-primary)]">
+                                {category}
+                            </h3>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {categorySkills.map((skill) => (
+                                    <div
+                                        key={skill.id || skill.name}
+                                        className="glass-card p-4 hover:bg-[var(--color-surface-hover)] transition-colors"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-lg bg-[var(--color-surface)] flex items-center justify-center text-2xl">
+                                                {skill.icon || '🔹'}
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-medium">{skill.name}</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="h-2 bg-[var(--color-surface)] rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-secondary)] rounded-full transition-all duration-1000"
-                                            style={{ width: `${skill.proficiency}%` }}
-                                        />
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
-        </section>
+        </section >
     );
 };

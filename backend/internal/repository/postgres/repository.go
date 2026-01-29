@@ -39,7 +39,7 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 // === Skills ===
 
 func (r *Repository) GetSkills(ctx context.Context) ([]model.Skill, error) {
-	query := `SELECT id, name, icon, proficiency, category, sort_order FROM skills ORDER BY proficiency DESC`
+	query := `SELECT id, name, COALESCE(icon, ''), proficiency, COALESCE(category, ''), sort_order FROM skills ORDER BY proficiency DESC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (r *Repository) DeleteSkill(ctx context.Context, id string) error {
 // === Projects ===
 
 func (r *Repository) GetProjects(ctx context.Context) ([]model.Project, error) {
-	query := `SELECT id, title, description, image_url, live_url, code_url, tags, featured, sort_order FROM projects ORDER BY sort_order ASC`
+	query := `SELECT id, title, COALESCE(description, ''), COALESCE(image_url, ''), COALESCE(live_url, ''), COALESCE(code_url, ''), tags, featured, sort_order FROM projects ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err

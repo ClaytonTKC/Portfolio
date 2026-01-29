@@ -16,8 +16,8 @@ export const AddSkillModal: React.FC<AddSkillModalProps> = ({ isOpen, onClose, s
     const [formData, setFormData] = useState({
         name: '',
         icon: '',
-        proficiency: 50,
-        category: 'Frontend',
+        proficiency: 100,
+        category: 'Languages',
     });
     const [statusModal, setStatusModal] = useState<{ isOpen: boolean; type: 'success' | 'error'; title: string; message: string }>({
         isOpen: false,
@@ -38,8 +38,8 @@ export const AddSkillModal: React.FC<AddSkillModalProps> = ({ isOpen, onClose, s
             setFormData({
                 name: '',
                 icon: '',
-                proficiency: 50,
-                category: 'Frontend',
+                proficiency: 100,
+                category: 'Languages',
             });
         }
     }, [skill, isOpen]);
@@ -131,27 +131,16 @@ export const AddSkillModal: React.FC<AddSkillModalProps> = ({ isOpen, onClose, s
                                 onChange={handleChange}
                                 className="form-input"
                             >
-                                <option value="Frontend">Frontend</option>
-                                <option value="Backend">Backend</option>
-                                <option value="DevOps">DevOps</option>
-                                <option value="Mobile">Mobile</option>
+                                <option value="Languages">Languages</option>
+                                <option value="Frameworks">Frameworks</option>
+                                <option value="Developer Tools">Developer Tools</option>
+                                <option value="Libraries">Libraries</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Proficiency ({formData.proficiency}%)</label>
-                        <input
-                            type="range"
-                            name="proficiency"
-                            min="0"
-                            max="100"
-                            step="5"
-                            value={formData.proficiency}
-                            onChange={handleChange}
-                        />
-                    </div>
+
 
                     <div className="pt-4 flex justify-end gap-3">
                         <Button type="button" variant="secondary" onClick={onClose} disabled={isLoading}>

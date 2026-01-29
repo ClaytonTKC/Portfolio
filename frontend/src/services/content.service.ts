@@ -86,27 +86,27 @@ export const contentService = {
     // Public Data Fetching
     async getProjects(): Promise<Project[]> {
         const response = await client.get<Project[]>('/public/projects');
-        return response.data;
+        return response.data || [];
     },
 
     async getSkills(): Promise<Skill[]> {
         const response = await client.get<Skill[]>('/public/skills');
-        return response.data;
+        return response.data || [];
     },
 
     async getExperiences(): Promise<Experience[]> {
         const response = await client.get<Experience[]>('/public/experience');
-        return response.data;
+        return response.data || [];
     },
 
     async getEducation(): Promise<Education[]> {
         const response = await client.get<Education[]>('/public/education');
-        return response.data;
+        return response.data || [];
     },
 
     async getHobbies(): Promise<Hobby[]> {
         const response = await client.get<Hobby[]>('/public/hobbies');
-        return response.data;
+        return response.data || [];
     },
 
     // Experience

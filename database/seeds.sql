@@ -1,37 +1,55 @@
--- Seeds for initial data
+DELETE FROM skills;
+DELETE FROM projects;
+DELETE FROM experiences;
+DELETE FROM education;
+DELETE FROM hobbies;
 
--- Skills
-INSERT INTO skills (name, icon, proficiency, category, sort_order) VALUES
-('React', '⚛️', 95, 'Frontend', 10),
-('TypeScript', '📘', 90, 'Languages', 20),
-('Go', '🐹', 85, 'Backend', 30),
-('PostgreSQL', '🐘', 80, 'Database', 40),
-('Docker', '🐳', 75, 'DevOps', 50),
-('Tailwind CSS', '🎨', 90, 'Frontend', 60);
+-- Insert Skills
+-- Languages
+INSERT INTO skills (name, category, proficiency, sort_order) VALUES
+('Java', 'Languages', 90, 1),
+('JavaScript', 'Languages', 90, 2),
+('C#', 'Languages', 80, 3),
+('C++ (Arduino)', 'Languages', 75, 4),
+('Kotlin', 'Languages', 70, 5),
+('SQL (Postgres, MySQL)', 'Languages', 85, 6),
+('Python', 'Languages', 85, 7);
 
--- Projects
-INSERT INTO projects (title, description, image_url, live_url, code_url, tags, featured, sort_order) VALUES
-('E-Commerce Platform', 'A full-featured online store built with React and Go.', 'https://images.unsplash.com/photo-1557821552-17105176677c', 'https://example.com', 'https://github.com', ARRAY['React', 'Go', 'PostgreSQL'], true, 10),
-('Task Management App', 'Drag and drop task board for teams.', 'https://images.unsplash.com/photo-1540350394557-8d14678e7f91', 'https://example.com', 'https://github.com', ARRAY['TypeScript', 'React', 'Redux'], true, 20),
-('Portfolio Website', 'Modern personal portfolio with admin dashboard.', 'https://images.unsplash.com/photo-1460925895917-afdab827c52f', 'https://example.com', 'https://github.com', ARRAY['React', 'Vite', 'Tailwind'], false, 30);
+-- Frameworks
+INSERT INTO skills (name, category, proficiency, sort_order) VALUES
+('Spring Boot', 'Frameworks', 85, 1),
+('React', 'Frameworks', 85, 2),
+('Node.js', 'Frameworks', 80, 3),
+('JUnit', 'Frameworks', 75, 4),
+('Laravel', 'Frameworks', 70, 5),
+('Git', 'Frameworks', 90, 6);
 
--- Experience
+-- Developer Tools
+INSERT INTO skills (name, category, proficiency, sort_order) VALUES
+('GitHub', 'Developer Tools', 90, 1),
+('Playwright', 'Developer Tools', 80, 2),
+('Docker', 'Developer Tools', 75, 3),
+('JIRA (Scrum methods)', 'Developer Tools', 85, 4);
+
+-- Libraries
+INSERT INTO skills (name, category, proficiency, sort_order) VALUES
+('Mockito', 'Libraries', 75, 1),
+('Bootstrap', 'Libraries', 80, 2),
+('Lombok', 'Libraries', 80, 3);
+
+-- Insert Projects
+INSERT INTO projects (title, description, tags, sort_order) VALUES
+('Visual Impact', 'Built a B2B platform connecting advertisers with media owners to manage and display ads on digital screens.\nRole: Developed and refined the UI for booking and advertisement pages, improving navigation and performance for both advertisers and media owners.', '{"Spring Boot", "JavaScript", "CSS", "React", "JIRA", "Playwright"}', 1),
+('Champlain Pet Clinic', 'Developed a microservice-based web application that allows users to create visits, purchase products, and submit reviews.\nRole: Designed and enhanced the Visit and Review pages to improve the user interface and overall experience.', '{"Spring Boot", "JavaScript", "HTML", "CSS", "React", "JIRA"}', 2),
+('Library Management', 'Collaborated on developing a microservice-based library system to manage user accounts, book inventory, and loan tracking.\nRole: Led the implementation of the author microservice.', '{"Springboot", "Docker", "Java"}', 3);
+
+-- Insert Experience
 INSERT INTO experiences (title, company, location, start_date, end_date, is_current, description, sort_order) VALUES
-('Senior Software Engineer', 'Tech Corp', 'San Francisco, CA', '2023-01-01', NULL, true, ARRAY['Led frontend team', 'Architected new API'], 10),
-('Full Stack Developer', 'StartUp Inc', 'New York, NY', '2021-06-01', '2022-12-31', false, ARRAY['Built MVP', 'Implemented CI/CD'], 20);
+('Computer Science Tutor', 'Champlain College', 'Saint-Lambert, QC', '2025-08-01', '2025-11-01', false, '{"Mentored students in computer science concepts.", "Learned how to collaborate with others in a fast-paced and high-pressure environment."}', 1),
+('Food Service Worker', 'McDonald', 'Brossard, QC', '2021-08-01', '2023-08-01', false, '{"Mentored employees in the kitchen.", "Learned how to collaborate with others in a fast-paced and high-pressure environment."}', 2),
+('Mathematics Tutor', 'Kumon', 'Longueuil, QC', '2022-08-01', '2023-06-01', false, '{"Guided learners through exercises and encouraged strong study habits.", "Supported student progress and motivated them to build confidence in math."}', 3);
 
--- Education
+-- Insert Education
 INSERT INTO education (degree, school, location, start_date, end_date, description, sort_order) VALUES
-('Bachelor of Science in Computer Science', 'University of Technology', 'Boston, MA', '2017-09-01', '2021-05-01', 'Graduated with Honors', 10);
-
--- Hobbies
-INSERT INTO hobbies (name, icon, description, sort_order) VALUES
-('Photography', '📷', 'Landscape and street photography', 10),
-('Gaming', '🎮', 'Strategy and RPG games', 20),
-('Hiking', '🥾', 'Exploring national parks', 30);
-
--- Testimonials
-INSERT INTO testimonials (author_name, author_role, author_email, content, rating, status) VALUES
-('Jane Doe', 'Product Manager', 'jane@example.com', 'One of the best developers I have worked with.', 5, 'approved'),
-('John Smith', 'CEO', 'john@example.com', 'Delivered the project on time and under budget.', 5, 'approved'),
-('Anonymous', 'Visitor', 'anon@example.com', 'Nice website!', 4, 'pending');
+('Diploma of College Studies (DEC) in Computer Science', 'Champlain College Saint-Lambert', 'Saint-Lambert, QC', '2023-08-01', '2026-06-01', 'Expected graduation June 2026', 1),
+('Secondary School Diploma', 'Centennial Regional High School', 'Greenfield Park, QC', '2018-09-01', '2023-06-01', '', 2);

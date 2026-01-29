@@ -1,20 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '../ui/Card';
-
-const educationData = [
-    {
-        degree: 'Computer Science Degree',
-        school: 'Champlain College',
-        location: 'Montreal, Quebec',
-        period: '2023 - 2026',
-        description: 'Specialized in Distributed Systems and Machine Learning. Thesis on scalable real-time data processing.',
-        icon: '🎓',
-    },
-];
+import { contentService, type Education as EducationType } from '../../services/content.service';
 
 export const Education: React.FC = () => {
     const { t } = useTranslation();
+    const [education, setEducation] = useState<EducationType[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchEducation = async () => {
+            try {
+                const data = await contentService.getEducation();
+                setEducation(data);
+            } catch (error) {
+                console.error('Failed to fetch education data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEducation();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="section bg-[var(--color-surface)]/30" id="education">
+                <div className="container mx-auto px-6 text-center">
+                    <p className="text-[var(--color-text-muted)]">Loading education...</p>
+                </div>
+            </section>
+        );
+    }
+
+    if (education.length === 0) {
+        return null;
+    }
 
     return (
         <section className="section bg-[var(--color-surface)]/30" id="education">
@@ -26,20 +47,21 @@ export const Education: React.FC = () => {
 
                 {/* Education */}
                 <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                    {educationData.map((edu, index) => (
+                    {education.map((edu, index) => (
                         <Card
-                            key={index}
+                            key={edu.id || index}
                             className="animate-fade-in-up"
                         >
                             <div className="flex items-start gap-4">
                                 <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center text-2xl shrink-0">
-                                    {edu.icon}
+                                    🎓
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold mb-1">{edu.degree}</h3>
                                     <p className="text-[var(--color-primary)] font-medium">{edu.school}</p>
                                     <p className="text-sm text-[var(--color-text-muted)] mb-2">
-                                        {edu.location} • {edu.period}
+                                        {edu.location} • {new Date(edu.startDate).getFullYear()} -
+                                        {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
                                     </p>
                                     <p className="text-sm text-[var(--color-text-muted)]">
                                         {edu.description}

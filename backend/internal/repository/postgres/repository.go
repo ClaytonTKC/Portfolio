@@ -161,6 +161,33 @@ func (r *Repository) GetExperiences(ctx context.Context) ([]model.Experience, er
 	return exps, nil
 }
 
+func (r *Repository) CreateExperience(ctx context.Context, e model.Experience) (model.Experience, error) {
+	query := `
+		INSERT INTO experiences (title, company, location, start_date, end_date, is_current, description, sort_order)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id, created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, e.Title, e.Company, e.Location, e.StartDate, e.EndDate, e.Current, e.Description, e.SortOrder).Scan(&e.ID, &e.CreatedAt, &e.UpdatedAt)
+	return e, err
+}
+
+func (r *Repository) UpdateExperience(ctx context.Context, e model.Experience) (model.Experience, error) {
+	query := `
+		UPDATE experiences
+		SET title = $1, company = $2, location = $3, start_date = $4, end_date = $5, is_current = $6, description = $7, sort_order = $8, updated_at = NOW()
+		WHERE id = $9
+		RETURNING created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, e.Title, e.Company, e.Location, e.StartDate, e.EndDate, e.Current, e.Description, e.SortOrder, e.ID).Scan(&e.CreatedAt, &e.UpdatedAt)
+	return e, err
+}
+
+func (r *Repository) DeleteExperience(ctx context.Context, id string) error {
+	query := `DELETE FROM experiences WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
+}
+
 // === Education ===
 
 func (r *Repository) GetEducation(ctx context.Context) ([]model.Education, error) {
@@ -189,6 +216,33 @@ func (r *Repository) GetEducation(ctx context.Context) ([]model.Education, error
 	return edus, nil
 }
 
+func (r *Repository) CreateEducation(ctx context.Context, e model.Education) (model.Education, error) {
+	query := `
+		INSERT INTO education (degree, school, location, start_date, end_date, description, sort_order)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id, created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, e.Degree, e.School, e.Location, e.StartDate, e.EndDate, e.Description, e.SortOrder).Scan(&e.ID, &e.CreatedAt, &e.UpdatedAt)
+	return e, err
+}
+
+func (r *Repository) UpdateEducation(ctx context.Context, e model.Education) (model.Education, error) {
+	query := `
+		UPDATE education
+		SET degree = $1, school = $2, location = $3, start_date = $4, end_date = $5, description = $6, sort_order = $7, updated_at = NOW()
+		WHERE id = $8
+		RETURNING created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, e.Degree, e.School, e.Location, e.StartDate, e.EndDate, e.Description, e.SortOrder, e.ID).Scan(&e.CreatedAt, &e.UpdatedAt)
+	return e, err
+}
+
+func (r *Repository) DeleteEducation(ctx context.Context, id string) error {
+	query := `DELETE FROM education WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
+}
+
 // === Hobbies ===
 
 func (r *Repository) GetHobbies(ctx context.Context) ([]model.Hobby, error) {
@@ -208,6 +262,33 @@ func (r *Repository) GetHobbies(ctx context.Context) ([]model.Hobby, error) {
 		hobbies = append(hobbies, h)
 	}
 	return hobbies, nil
+}
+
+func (r *Repository) CreateHobby(ctx context.Context, h model.Hobby) (model.Hobby, error) {
+	query := `
+		INSERT INTO hobbies (name, icon, description, sort_order)
+		VALUES ($1, $2, $3, $4)
+		RETURNING id, created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, h.Name, h.Icon, h.Description, h.SortOrder).Scan(&h.ID, &h.CreatedAt, &h.UpdatedAt)
+	return h, err
+}
+
+func (r *Repository) UpdateHobby(ctx context.Context, h model.Hobby) (model.Hobby, error) {
+	query := `
+		UPDATE hobbies
+		SET name = $1, icon = $2, description = $3, sort_order = $4, updated_at = NOW()
+		WHERE id = $5
+		RETURNING created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, h.Name, h.Icon, h.Description, h.SortOrder, h.ID).Scan(&h.CreatedAt, &h.UpdatedAt)
+	return h, err
+}
+
+func (r *Repository) DeleteHobby(ctx context.Context, id string) error {
+	query := `DELETE FROM hobbies WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
 }
 
 // === Testimonials ===

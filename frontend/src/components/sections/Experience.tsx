@@ -1,23 +1,40 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-const experienceData = [
-    {
-        title: 'Kumon Math & English Teacher',
-        company: 'Kumon',
-        location: 'Montreal, Quebec, Canada',
-        period: '2022 - Present',
-        description: [
-            'Taught Math and English to children aged 5 to 16',
-            'Mentored students and conducted regular assessments',
-            'Assisted students in their studies and helped them improve their grades',
-            'Assisted students in their studies and helped them improve their grades',
-        ],
-    },
-];
+import { contentService, type Experience as ExperienceType } from '../../services/content.service';
 
 export const Experience: React.FC = () => {
     const { t } = useTranslation();
+    const [experiences, setExperiences] = useState<ExperienceType[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchExperiences = async () => {
+            try {
+                const data = await contentService.getExperiences();
+                setExperiences(data);
+            } catch (error) {
+                console.error('Failed to fetch experience data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchExperiences();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="section" id="experience">
+                <div className="container mx-auto px-6 text-center">
+                    <p className="text-[var(--color-text-muted)]">Loading experience...</p>
+                </div>
+            </section>
+        );
+    }
+
+    if (experiences.length === 0) {
+        return null; // Or render a placeholder if desired
+    }
 
     return (
         <section className="section" id="experience">
@@ -28,9 +45,9 @@ export const Experience: React.FC = () => {
                 </div>
 
                 <div className="max-w-3xl mx-auto">
-                    {experienceData.map((exp, index) => (
+                    {experiences.map((exp, index) => (
                         <div
-                            key={index}
+                            key={exp.id || index}
                             className="timeline-item animate-fade-in-up"
                             style={{ animationDelay: `${index * 0.2}s` }}
                         >
@@ -49,7 +66,8 @@ export const Experience: React.FC = () => {
                                             {exp.location}
                                         </p>
                                         <p className="text-[var(--color-secondary)] font-medium text-sm">
-                                            {exp.period}
+                                            {new Date(exp.startDate).getFullYear()} -
+                                            {exp.current ? 'Present' : (exp.endDate ? new Date(exp.endDate).getFullYear() : '')}
                                         </p>
                                     </div>
                                 </div>

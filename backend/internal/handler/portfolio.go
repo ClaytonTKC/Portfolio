@@ -213,9 +213,30 @@ func (h *PortfolioHandler) CreateExperience(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// For simplicity, not mapping all fields in this snippet, but ideally would
-	exp := model.Experience{ID: "new-exp-id", Title: req.Title, Company: req.Company}
-	c.JSON(http.StatusCreated, exp)
+	
+	startDate, _ := time.Parse("2006-01-02", req.StartDate)
+	var endDate time.Time
+	if req.EndDate != "" {
+		endDate, _ = time.Parse("2006-01-02", req.EndDate)
+	}
+
+	exp := model.Experience{
+		Title:       req.Title,
+		Company:     req.Company,
+		Location:    req.Location,
+		StartDate:   startDate,
+		EndDate:     endDate,
+		Current:     req.Current,
+		Description: req.Description,
+		SortOrder:   req.SortOrder,
+	}
+
+	createdExp, err := h.repo.CreateExperience(c.Request.Context(), exp)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, createdExp)
 }
 
 func (h *PortfolioHandler) UpdateExperience(c *gin.Context) {
@@ -225,12 +246,41 @@ func (h *PortfolioHandler) UpdateExperience(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	exp := model.Experience{ID: id, Title: req.Title, Company: req.Company}
-	c.JSON(http.StatusOK, exp)
+
+	var startDate, endDate time.Time
+	if req.StartDate != "" {
+		startDate, _ = time.Parse("2006-01-02", req.StartDate)
+	}
+	if req.EndDate != "" {
+		endDate, _ = time.Parse("2006-01-02", req.EndDate)
+	}
+
+	exp := model.Experience{
+		ID:          id,
+		Title:       req.Title,
+		Company:     req.Company,
+		Location:    req.Location,
+		StartDate:   startDate,
+		EndDate:     endDate,
+		Current:     req.Current,
+		Description: req.Description,
+		SortOrder:   req.SortOrder,
+	}
+
+	updatedExp, err := h.repo.UpdateExperience(c.Request.Context(), exp)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, updatedExp)
 }
 
 func (h *PortfolioHandler) DeleteExperience(c *gin.Context) {
 	id := c.Param("id")
+	if err := h.repo.DeleteExperience(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Experience deleted", "id": id})
 }
 
@@ -250,8 +300,29 @@ func (h *PortfolioHandler) CreateEducation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	edu := model.Education{ID: "new-edu-id", Degree: req.Degree, School: req.School}
-	c.JSON(http.StatusCreated, edu)
+
+	startDate, _ := time.Parse("2006-01-02", req.StartDate)
+	var endDate time.Time
+	if req.EndDate != "" {
+		endDate, _ = time.Parse("2006-01-02", req.EndDate)
+	}
+
+	edu := model.Education{
+		Degree:      req.Degree,
+		School:      req.School,
+		Location:    req.Location,
+		StartDate:   startDate,
+		EndDate:     endDate,
+		Description: req.Description,
+		SortOrder:   req.SortOrder,
+	}
+
+	createdEdu, err := h.repo.CreateEducation(c.Request.Context(), edu)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, createdEdu)
 }
 
 func (h *PortfolioHandler) UpdateEducation(c *gin.Context) {
@@ -261,12 +332,40 @@ func (h *PortfolioHandler) UpdateEducation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	edu := model.Education{ID: id, Degree: req.Degree, School: req.School}
-	c.JSON(http.StatusOK, edu)
+
+	var startDate, endDate time.Time
+	if req.StartDate != "" {
+		startDate, _ = time.Parse("2006-01-02", req.StartDate)
+	}
+	if req.EndDate != "" {
+		endDate, _ = time.Parse("2006-01-02", req.EndDate)
+	}
+
+	edu := model.Education{
+		ID:          id,
+		Degree:      req.Degree,
+		School:      req.School,
+		Location:    req.Location,
+		StartDate:   startDate,
+		EndDate:     endDate,
+		Description: req.Description,
+		SortOrder:   req.SortOrder,
+	}
+
+	updatedEdu, err := h.repo.UpdateEducation(c.Request.Context(), edu)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, updatedEdu)
 }
 
 func (h *PortfolioHandler) DeleteEducation(c *gin.Context) {
 	id := c.Param("id")
+	if err := h.repo.DeleteEducation(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Education deleted", "id": id})
 }
 
@@ -286,8 +385,18 @@ func (h *PortfolioHandler) CreateHobby(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	hobby := model.Hobby{ID: "new-hobby-id", Name: req.Name, Icon: req.Icon, Description: req.Description}
-	c.JSON(http.StatusCreated, hobby)
+	hobby := model.Hobby{
+		Name:        req.Name,
+		Icon:        req.Icon,
+		Description: req.Description,
+		SortOrder:   req.SortOrder,
+	}
+	createdHobby, err := h.repo.CreateHobby(c.Request.Context(), hobby)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, createdHobby)
 }
 
 func (h *PortfolioHandler) UpdateHobby(c *gin.Context) {
@@ -297,12 +406,27 @@ func (h *PortfolioHandler) UpdateHobby(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	hobby := model.Hobby{ID: id, Name: req.Name, Icon: req.Icon, Description: req.Description}
-	c.JSON(http.StatusOK, hobby)
+	hobby := model.Hobby{
+		ID:          id,
+		Name:        req.Name,
+		Icon:        req.Icon,
+		Description: req.Description,
+		SortOrder:   req.SortOrder,
+	}
+	updatedHobby, err := h.repo.UpdateHobby(c.Request.Context(), hobby)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, updatedHobby)
 }
 
 func (h *PortfolioHandler) DeleteHobby(c *gin.Context) {
 	id := c.Param("id")
+	if err := h.repo.DeleteHobby(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Hobby deleted", "id": id})
 }
 

@@ -8,6 +8,9 @@ import { AdminDashboard } from './pages/AdminDashboard';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { ManageProjects } from './pages/admin/ManageProjects';
 import { ManageSkills } from './pages/admin/ManageSkills';
+import { ManageExperience } from './pages/admin/ManageExperience';
+import { ManageEducation } from './pages/admin/ManageEducation';
+import { ManageHobbies } from './pages/admin/ManageHobbies';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import './i18n';
 
@@ -31,6 +34,9 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/skills" element={<ManageSkills />} />
             <Route path="/admin/projects" element={<ManageProjects />} />
+            <Route path="/admin/experience" element={<ManageExperience />} />
+            <Route path="/admin/education" element={<ManageEducation />} />
+            <Route path="/admin/hobbies" element={<ManageHobbies />} />
           </Route>
         </Route>
       </Routes>

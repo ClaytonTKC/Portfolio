@@ -1,42 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '../ui/Card';
-
-const hobbiesData = [
-    {
-        name: 'Photography',
-        icon: '📷',
-        description: 'Capturing moments and landscapes through the lens',
-    },
-    {
-        name: 'Gaming',
-        icon: '🎮',
-        description: 'Competitive and casual gaming across various platforms',
-    },
-    {
-        name: 'Reading',
-        icon: '📚',
-        description: 'Exploring fiction, technology, and self-improvement books',
-    },
-    {
-        name: 'Hiking',
-        icon: '🥾',
-        description: 'Exploring trails and enjoying nature on weekends',
-    },
-    {
-        name: 'Cooking',
-        icon: '👨‍🍳',
-        description: 'Experimenting with international cuisines and recipes',
-    },
-    {
-        name: 'Music',
-        icon: '🎸',
-        description: 'Playing guitar and discovering new artists',
-    },
-];
+import { contentService, type Hobby } from '../../services/content.service';
 
 export const Hobbies: React.FC = () => {
     const { t } = useTranslation();
+    const [hobbies, setHobbies] = useState<Hobby[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchHobbies = async () => {
+            try {
+                const data = await contentService.getHobbies();
+                setHobbies(data);
+            } catch (error) {
+                console.error('Failed to fetch hobbies:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHobbies();
+    }, []);
+
+    if (loading) {
+        return (
+            <section className="section" id="hobbies">
+                <div className="container mx-auto px-6 text-center">
+                    <p className="text-[var(--color-text-muted)]">Loading hobbies...</p>
+                </div>
+            </section>
+        );
+    }
+
+    if (hobbies.length === 0) {
+        return null;
+    }
 
     return (
         <section className="section" id="hobbies">
@@ -47,9 +46,9 @@ export const Hobbies: React.FC = () => {
                 </div>
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                    {hobbiesData.map((hobby) => (
+                    {hobbies.map((hobby, index) => (
                         <Card
-                            key={hobby.name}
+                            key={hobby.id || index}
                             className="text-center animate-fade-in-up"
                         >
                             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-[var(--color-primary)]/20 to-[var(--color-secondary)]/20 flex items-center justify-center text-3xl">

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import type { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { eventBus } from '../utils/eventBus';
 
 // Create axios instance with base URL from environment variables

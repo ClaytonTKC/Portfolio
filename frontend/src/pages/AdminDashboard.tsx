@@ -1,21 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { AddProjectModal } from '../components/admin/AddProjectModal';
 import { AddSkillModal } from '../components/admin/AddSkillModal';
+import { contentService, type Testimonial, type Message } from '../services/content.service';
 
 export const AdminDashboard: React.FC = () => {
     const [activeModal, setActiveModal] = useState<'project' | 'skill' | null>(null);
+    const [pendingTestimonials, setPendingTestimonials] = useState<Testimonial[]>([]);
+    const [recentMessages, setRecentMessages] = useState<Message[]>([]);
 
-    const pendingTestimonials = [
-        { id: '1', name: 'New User', content: 'Great portfolio!', date: '2 hours ago' },
-        { id: '2', name: 'Client X', content: 'Amazing work on our project...', date: '1 day ago' },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [testimonials, messages] = await Promise.all([
+                    contentService.getPendingTestimonials(),
+                    contentService.getRecentMessages()
+                ]);
+                setPendingTestimonials(testimonials);
+                setRecentMessages(messages);
+            } catch (error) {
+                console.error('Failed to fetch dashboard data:', error);
+            }
+        };
 
-    const recentMessages = [
-        { id: '1', name: 'Clay Smith', email: 'Clay@example.com', subject: 'Project inquiry', date: '1 hour ago' },
-        { id: '2', name: 'Jane Doe', email: 'jane@example.com', subject: 'Collaboration opportunity', date: '3 hours ago' },
-    ];
+        fetchData();
+    }, []);
 
     return (
         <>

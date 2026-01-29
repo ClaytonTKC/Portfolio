@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, Outlet, Link, useLocation } from 'react-router-dom';
 import { Card } from '../ui/Card';
 import { authService } from '../../services/auth.service';
+import { contentService } from '../../services/content.service';
 import { eventBus } from '../../utils/eventBus';
 import { StatusModal } from '../ui/StatusModal';
 
@@ -30,17 +31,65 @@ export const AdminLayout: React.FC = () => {
         handleLogout();
     };
 
+    const [counts, setCounts] = useState({
+        skills: 0,
+        projects: 0,
+        experience: 0,
+        education: 0,
+        hobbies: 0,
+        testimonials: 0,
+        messages: 0
+    });
+
+    useEffect(() => {
+        const fetchCounts = async () => {
+            try {
+                const [skills, projects, experience, education, hobbies, testimonials, messages] = await Promise.all([
+                    contentService.getSkills(),
+                    contentService.getProjects(),
+                    contentService.getExperiences(),
+                    contentService.getEducation(),
+                    contentService.getHobbies(),
+                    contentService.getPendingTestimonials(),
+                    contentService.getRecentMessages()
+                ]);
+
+                setCounts({
+                    skills: skills.length,
+                    projects: projects.length,
+                    experience: experience.length,
+                    education: education.length,
+                    hobbies: hobbies.length,
+                    testimonials: testimonials.length,
+                    messages: messages.length
+                });
+            } catch (error) {
+                console.error('Failed to fetch counts:', error);
+            }
+        };
+
+        fetchCounts();
+
+        // Listen for updates
+        const handleUpdate = () => fetchCounts();
+        eventBus.on('content:updated', handleUpdate);
+
+        return () => {
+            eventBus.off('content:updated', handleUpdate);
+        };
+    }, []);
+
     const menuItems = [
         { icon: '📊', label: 'Dashboard', count: null, path: '/admin/dashboard' },
-        { icon: '💼', label: 'Skills', count: 10, path: '/admin/skills' },
-        { icon: '📁', label: 'Projects', count: 6, path: '/admin/projects' },
-        { icon: '🏢', label: 'Experience', count: 3, path: '/admin/experience' },
-        { icon: '🎓', label: 'Education', count: 2, path: '/admin/education' },
-        { icon: '🎨', label: 'Hobbies', count: 6, path: '/admin/hobbies' },
+        { icon: '💼', label: 'Skills', count: counts.skills, path: '/admin/skills' },
+        { icon: '📁', label: 'Projects', count: counts.projects, path: '/admin/projects' },
+        { icon: '🏢', label: 'Experience', count: counts.experience, path: '/admin/experience' },
+        { icon: '🎓', label: 'Education', count: counts.education, path: '/admin/education' },
+        { icon: '🎨', label: 'Hobbies', count: counts.hobbies, path: '/admin/hobbies' },
         { icon: '📄', label: 'Resume', count: null, path: '/admin/resume' },
         { icon: '📞', label: 'Contact Info', count: null, path: '/admin/contact-info' },
-        { icon: '💬', label: 'Testimonials', count: 4, path: '/admin/testimonials' },
-        { icon: '✉️', label: 'Messages', count: 12, path: '/admin/messages' },
+        { icon: '💬', label: 'Testimonials', count: counts.testimonials, path: '/admin/testimonials' },
+        { icon: '✉️', label: 'Messages', count: counts.messages, path: '/admin/messages' },
     ];
 
     return (

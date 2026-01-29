@@ -52,6 +52,23 @@ export interface Hobby {
     sortOrder?: number;
 }
 
+export interface Testimonial {
+    id: string;
+    name: string;
+    content: string;
+    date: string;
+    status?: 'pending' | 'approved' | 'rejected';
+}
+
+export interface Message {
+    id: string;
+    name: string;
+    email: string;
+    subject: string;
+    date: string;
+    read?: boolean;
+}
+
 export const contentService = {
     // Projects
     async createProject(project: Project): Promise<Project> {
@@ -152,5 +169,22 @@ export const contentService = {
 
     async deleteHobby(id: string): Promise<void> {
         await client.delete(`/admin/hobbies/${id}`);
+    },
+
+    // Testimonials & Messages (Mocked for now)
+    async getPendingTestimonials(): Promise<Testimonial[]> {
+        // Mock data matching AdminDashboard
+        return [
+            { id: '1', name: 'New User', content: 'Great portfolio!', date: '2 hours ago', status: 'pending' },
+            { id: '2', name: 'Client X', content: 'Amazing work on our project...', date: '1 day ago', status: 'pending' },
+        ];
+    },
+
+    async getRecentMessages(): Promise<Message[]> {
+        // Mock data matching AdminDashboard
+        return [
+            { id: '1', name: 'Clay Smith', email: 'Clay@example.com', subject: 'Project inquiry', date: '1 hour ago' },
+            { id: '2', name: 'Jane Doe', email: 'jane@example.com', subject: 'Collaboration opportunity', date: '3 hours ago' },
+        ];
     }
 };

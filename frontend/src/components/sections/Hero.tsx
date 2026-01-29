@@ -30,6 +30,15 @@ export const Hero: React.FC = () => {
                             <Button variant="secondary">
                                 {t('hero.contact')}
                             </Button>
+                            <a
+                                href="/CV.pdf"
+                                download="Clayton_Cheung_CV.pdf"
+                                className="btn-secondary flex items-center"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {t('hero.resume')}
+                            </a>
                         </div>
 
                         {/* Stats */}

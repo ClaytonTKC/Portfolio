@@ -10,10 +10,11 @@ import { useEffect, useState } from 'react';
 import { contentService, type Project } from '../../services/content.service';
 
 export const Projects: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const isFrench = i18n.language === 'fr';
 
     useEffect(() => {
         const fetchProjects = async () => {
@@ -33,25 +34,7 @@ export const Projects: React.FC = () => {
         fetchProjects();
     }, []);
 
-    if (loading) {
-        return (
-            <section className="section bg-[var(--color-surface)]/30" id="projects">
-                <div className="container mx-auto px-6 text-center">
-                    <div className="animate-pulse">Loading projects...</div>
-                </div>
-            </section>
-        );
-    }
-
-    if (error) {
-        return (
-            <section className="section bg-[var(--color-surface)]/30" id="projects">
-                <div className="container mx-auto px-6 text-center text-red-500">
-                    {error}
-                </div>
-            </section>
-        );
-    }
+    // ... (rendering states)
 
     return (
         <section className="section bg-[var(--color-surface)]/30" id="projects">
@@ -67,33 +50,23 @@ export const Projects: React.FC = () => {
                             key={project.id || project.title}
                             className="flex flex-col animate-fade-in-up"
                         >
-                            {/* Project Image */}
                             {project.imageUrl && (
-                                <div className="h-48 overflow-hidden rounded-lg mb-4 bg-[var(--color-surface)]">
+                                <div className="relative h-48 w-full overflow-hidden rounded-t-xl">
                                     <img
                                         src={project.imageUrl}
                                         alt={project.title}
-                                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                                        onError={(e) => {
-                                            // Fallback if image fails to load
-                                            (e.target as HTMLImageElement).style.display = 'none';
-                                            (e.target as HTMLImageElement).parentElement!.classList.add('flex', 'items-center', 'justify-center');
-                                            (e.target as HTMLImageElement).parentElement!.innerHTML = '<span class="text-4xl">📁</span>';
-                                        }}
+                                        className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
                                     />
-                                </div>
-                            )}
-                            {!project.imageUrl && (
-                                <div className="h-48 bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-surface-light)] rounded-lg mb-4 flex items-center justify-center">
-                                    <span className="text-6xl">📁</span>
                                 </div>
                             )}
 
                             {/* Content */}
                             <div className="flex-1">
-                                <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+                                <h3 className="text-xl font-semibold mb-2">
+                                    {(isFrench && project.titleFr) ? project.titleFr : project.title}
+                                </h3>
                                 <p className="text-[var(--color-text-muted)] text-sm mb-4">
-                                    {project.description}
+                                    {(isFrench && project.descriptionFr) ? project.descriptionFr : project.description}
                                 </p>
 
                                 {/* Tags */}

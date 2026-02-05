@@ -87,7 +87,7 @@ func (r *Repository) DeleteSkill(ctx context.Context, id string) error {
 // === Projects ===
 
 func (r *Repository) GetProjects(ctx context.Context) ([]model.Project, error) {
-	query := `SELECT id, title, COALESCE(description, ''), COALESCE(image_url, ''), COALESCE(live_url, ''), COALESCE(code_url, ''), tags, featured, sort_order FROM projects ORDER BY sort_order ASC`
+	query := `SELECT id, title, COALESCE(title_fr, ''), COALESCE(description, ''), COALESCE(description_fr, ''), COALESCE(image_url, ''), COALESCE(live_url, ''), COALESCE(code_url, ''), tags, featured, sort_order FROM projects ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (r *Repository) GetProjects(ctx context.Context) ([]model.Project, error) {
 	var projects []model.Project
 	for rows.Next() {
 		var p model.Project
-		if err := rows.Scan(&p.ID, &p.Title, &p.Description, &p.ImageURL, &p.LiveURL, &p.CodeURL, &p.Tags, &p.Featured, &p.SortOrder); err != nil {
+		if err := rows.Scan(&p.ID, &p.Title, &p.TitleFr, &p.Description, &p.DescriptionFr, &p.ImageURL, &p.LiveURL, &p.CodeURL, &p.Tags, &p.Featured, &p.SortOrder); err != nil {
 			return nil, err
 		}
 		projects = append(projects, p)
@@ -107,22 +107,22 @@ func (r *Repository) GetProjects(ctx context.Context) ([]model.Project, error) {
 
 func (r *Repository) CreateProject(ctx context.Context, p model.Project) (model.Project, error) {
 	query := `
-		INSERT INTO projects (title, description, image_url, live_url, code_url, tags, featured, sort_order)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO projects (title, title_fr, description, description_fr, image_url, live_url, code_url, tags, featured, sort_order)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 		RETURNING id, created_at, updated_at
 	`
-	err := r.db.QueryRow(ctx, query, p.Title, p.Description, p.ImageURL, p.LiveURL, p.CodeURL, p.Tags, p.Featured, p.SortOrder).Scan(&p.ID, &p.CreatedAt, &p.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, p.Title, p.TitleFr, p.Description, p.DescriptionFr, p.ImageURL, p.LiveURL, p.CodeURL, p.Tags, p.Featured, p.SortOrder).Scan(&p.ID, &p.CreatedAt, &p.UpdatedAt)
 	return p, err
 }
 
 func (r *Repository) UpdateProject(ctx context.Context, p model.Project) (model.Project, error) {
 	query := `
 		UPDATE projects 
-		SET title = $1, description = $2, image_url = $3, live_url = $4, code_url = $5, tags = $6, featured = $7, sort_order = $8, updated_at = NOW()
-		WHERE id = $9
+		SET title = $1, title_fr = $2, description = $3, description_fr = $4, image_url = $5, live_url = $6, code_url = $7, tags = $8, featured = $9, sort_order = $10, updated_at = NOW()
+		WHERE id = $11
 		RETURNING created_at, updated_at
 	`
-	err := r.db.QueryRow(ctx, query, p.Title, p.Description, p.ImageURL, p.LiveURL, p.CodeURL, p.Tags, p.Featured, p.SortOrder, p.ID).Scan(&p.CreatedAt, &p.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, p.Title, p.TitleFr, p.Description, p.DescriptionFr, p.ImageURL, p.LiveURL, p.CodeURL, p.Tags, p.Featured, p.SortOrder, p.ID).Scan(&p.CreatedAt, &p.UpdatedAt)
 	return p, err
 }
 

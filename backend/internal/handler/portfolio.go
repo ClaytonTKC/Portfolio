@@ -145,14 +145,16 @@ func (h *PortfolioHandler) CreateProject(c *gin.Context) {
 		return
 	}
 	project := model.Project{
-		Title:       req.Title,
-		Description: req.Description,
-		ImageURL:    req.ImageURL,
-		LiveURL:     req.LiveURL,
-		CodeURL:     req.CodeURL,
-		Tags:        req.Tags,
-		Featured:    req.Featured,
-		SortOrder:   req.SortOrder,
+		Title:         req.Title,
+		TitleFr:       req.TitleFr,
+		Description:   req.Description,
+		DescriptionFr: req.DescriptionFr,
+		ImageURL:      req.ImageURL,
+		LiveURL:       req.LiveURL,
+		CodeURL:       req.CodeURL,
+		Tags:          req.Tags,
+		Featured:      req.Featured,
+		SortOrder:     req.SortOrder,
 	}
 	createdProject, err := h.repo.CreateProject(c.Request.Context(), project)
 	if err != nil {
@@ -170,15 +172,17 @@ func (h *PortfolioHandler) UpdateProject(c *gin.Context) {
 		return
 	}
 	project := model.Project{
-		ID:          id,
-		Title:       req.Title,
-		Description: req.Description,
-		ImageURL:    req.ImageURL,
-		LiveURL:     req.LiveURL,
-		CodeURL:     req.CodeURL,
-		Tags:        req.Tags,
-		Featured:    req.Featured,
-		SortOrder:   req.SortOrder,
+		ID:            id,
+		Title:         req.Title,
+		TitleFr:       req.TitleFr,
+		Description:   req.Description,
+		DescriptionFr: req.DescriptionFr,
+		ImageURL:      req.ImageURL,
+		LiveURL:       req.LiveURL,
+		CodeURL:       req.CodeURL,
+		Tags:          req.Tags,
+		Featured:      req.Featured,
+		SortOrder:     req.SortOrder,
 	}
 	updatedProject, err := h.repo.UpdateProject(c.Request.Context(), project)
 	if err != nil {

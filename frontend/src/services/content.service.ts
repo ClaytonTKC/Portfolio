@@ -3,7 +3,9 @@ import client from '../api/client';
 export interface Project {
     id?: string;
     title: string;
+    titleFr?: string; // French Title
     description: string;
+    descriptionFr?: string; // French Description
     imageUrl?: string;
     liveUrl?: string;
     codeUrl?: string;

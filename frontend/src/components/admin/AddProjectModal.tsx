@@ -15,7 +15,9 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClos
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
+        titleFr: '',
         description: '',
+        descriptionFr: '',
         imageUrl: '',
         liveUrl: '',
         codeUrl: '',
@@ -33,7 +35,9 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClos
         if (project) {
             setFormData({
                 title: project.title,
+                titleFr: project.titleFr || '',
                 description: project.description,
+                descriptionFr: project.descriptionFr || '',
                 imageUrl: project.imageUrl || '',
                 liveUrl: project.liveUrl || '',
                 codeUrl: project.codeUrl || '',
@@ -43,7 +47,9 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClos
         } else {
             setFormData({
                 title: '',
+                titleFr: '',
                 description: '',
+                descriptionFr: '',
                 imageUrl: '',
                 liveUrl: '',
                 codeUrl: '',
@@ -114,21 +120,34 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClos
         <>
             <Modal isOpen={isOpen} onClose={onClose} title={project ? "Edit Project" : "Add New Project"}>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Title</label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            required
-                            className="form-input"
-                            placeholder="My Awesome Project"
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Title (English)</label>
+                            <input
+                                type="text"
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                required
+                                className="form-input"
+                                placeholder="My Project"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1">Title (French)</label>
+                            <input
+                                type="text"
+                                name="titleFr"
+                                value={formData.titleFr}
+                                onChange={handleChange}
+                                className="form-input"
+                                placeholder="Mon Projet"
+                            />
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium mb-1">Description</label>
+                        <label className="block text-sm font-medium mb-1">Description (English)</label>
                         <textarea
                             name="description"
                             value={formData.description}
@@ -139,7 +158,19 @@ export const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClos
                             placeholder="Project description..."
                         />
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Description (French)</label>
+                        <textarea
+                            name="descriptionFr"
+                            value={formData.descriptionFr}
+                            onChange={handleChange}
+                            rows={3}
+                            className="form-input"
+                            placeholder="Description du projet..."
+                        />
+                    </div>
 
+                    {/* ... (rest of the form remains unchanged) */}
                     <div>
                         <label className="block text-sm font-medium mb-1">Image URL</label>
                         <input

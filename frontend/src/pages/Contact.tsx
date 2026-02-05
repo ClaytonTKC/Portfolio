@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../components/ui/Button';
+import { contentService } from '../services/content.service';
 
 export const ContactPage: React.FC = () => {
     const { t } = useTranslation();
@@ -11,12 +12,21 @@ export const ContactPage: React.FC = () => {
     });
     const [submitted, setSubmitted] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Placeholder - would submit to backend
-        console.log('Contact form submitted:', formData);
-        setSubmitted(true);
-        setFormData({ name: '', email: '', message: '' });
+        try {
+            await contentService.createMessage({
+                name: formData.name,
+                email: formData.email,
+                subject: 'Contact Form Submission', // Default subject or add field
+                content: formData.message
+            });
+            setSubmitted(true);
+            setFormData({ name: '', email: '', message: '' });
+        } catch (error) {
+            console.error('Failed to submit message:', error);
+            alert('Failed to send message. Please try again.');
+        }
     };
 
     const handleChange = (

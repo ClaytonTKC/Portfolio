@@ -11,6 +11,8 @@ import { ManageSkills } from './pages/admin/ManageSkills';
 import { ManageExperience } from './pages/admin/ManageExperience';
 import { ManageEducation } from './pages/admin/ManageEducation';
 import { ManageHobbies } from './pages/admin/ManageHobbies';
+import { ManageTestimonials } from './pages/admin/ManageTestimonials';
+import { ManageMessages } from './pages/admin/ManageMessages';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import './i18n';
 
@@ -37,6 +39,8 @@ function App() {
             <Route path="/admin/experience" element={<ManageExperience />} />
             <Route path="/admin/education" element={<ManageEducation />} />
             <Route path="/admin/hobbies" element={<ManageHobbies />} />
+            <Route path="/admin/testimonials" element={<ManageTestimonials />} />
+            <Route path="/admin/messages" element={<ManageMessages />} />
           </Route>
         </Route>
       </Routes>

@@ -1,35 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { contentService, type Testimonial } from '../services/content.service';
 
-// Placeholder approved testimonials (would come from API)
-const approvedTestimonials = [
+// Placeholder approved testimonials (fallback)
+const approvedTestimonials: Partial<Testimonial>[] = [
     {
         id: '1',
-        name: 'Sarah Johnson',
-        role: 'CTO, Tech Startup',
+        authorName: 'Sarah Johnson',
+        authorRole: 'CTO, Tech Startup',
         content: 'Working with Clay was an absolute pleasure. His technical expertise and problem-solving skills are outstanding. He delivered our project ahead of schedule and exceeded all expectations.',
         rating: 5,
     },
     {
         id: '2',
-        name: 'Michael Chen',
-        role: 'Product Manager, Enterprise Co.',
+        authorName: 'Michael Chen',
+        authorRole: 'Product Manager, Enterprise Co.',
         content: 'Clay\'s ability to translate complex requirements into elegant solutions is remarkable. He\'s not just a developer, but a true partner who cares about the success of the project.',
         rating: 5,
     },
     {
         id: '3',
-        name: 'Emily Rodriguez',
-        role: 'Founder, Design Agency',
+        authorName: 'Emily Rodriguez',
+        authorRole: 'Founder, Design Agency',
         content: 'Exceptional work! Clay brought our vision to life with beautiful, performant code. His attention to detail and user experience sensibility made all the difference.',
         rating: 5,
     },
 ];
 
+
 export const TestimonialsPage: React.FC = () => {
     const { t } = useTranslation();
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
@@ -39,12 +44,63 @@ export const TestimonialsPage: React.FC = () => {
     });
     const [submitted, setSubmitted] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        const fetchTestimonials = async () => {
+            try {
+                const data = await contentService.getApprovedTestimonials();
+                setTestimonials(data);
+            } catch (error) {
+                console.error('Failed to fetch testimonials:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchTestimonials();
+    }, []);
+
+    const scroll = (direction: 'left' | 'right') => {
+        if (scrollContainerRef.current) {
+            const container = scrollContainerRef.current;
+            const scrollAmount = container.clientWidth; // Scroll one full screen width/item
+            const maxScroll = container.scrollWidth - container.clientWidth;
+
+            if (direction === 'left') {
+                if (container.scrollLeft <= 5) { // Threshold for start
+                    // Loop to end
+                    container.scrollTo({ left: maxScroll, behavior: 'smooth' });
+                } else {
+                    container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                }
+            } else {
+                if (container.scrollLeft >= maxScroll - 5) { // Threshold for end
+                    // Loop to start
+                    container.scrollTo({ left: 0, behavior: 'smooth' });
+                } else {
+                    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                }
+            }
+        }
+    };
+
+    // Use placeholder data if API returns empty and not loading
+    const displayTestimonials = (!isLoading && testimonials.length > 0) ? testimonials : approvedTestimonials;
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Placeholder - would submit to backend for admin approval
-        console.log('Testimonial submitted:', formData);
-        setSubmitted(true);
-        setFormData({ name: '', role: '', message: '', rating: 5 });
+        try {
+            await contentService.createTestimonial({
+                authorName: formData.name,
+                authorRole: formData.role,
+                content: formData.message,
+                rating: formData.rating,
+                authorEmail: 'guest@example.com' // Optional: Add email field to form if needed
+            });
+            setSubmitted(true);
+            setFormData({ name: '', role: '', message: '', rating: 5 });
+        } catch (error) {
+            console.error('Failed to submit testimonial:', error);
+            alert('Failed to submit testimonial. Please try again.');
+        }
     };
 
     const handleChange = (
@@ -61,34 +117,62 @@ export const TestimonialsPage: React.FC = () => {
                     <p className="section-subtitle">{t('testimonials.subtitle')}</p>
                 </div>
 
-                {/* Approved Testimonials Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                    {approvedTestimonials.map((testimonial) => (
-                        <Card key={testimonial.id} className="flex flex-col">
-                            <div className="flex items-center gap-1 mb-4">
-                                {[...Array(5)].map((_, i) => (
-                                    <span
-                                        key={i}
-                                        className={`text-lg ${i < testimonial.rating
-                                            ? 'text-yellow-400'
-                                            : 'text-[var(--color-surface-light)]'
-                                            }`}
-                                    >
-                                        ★
-                                    </span>
-                                ))}
+                {/* Testimonials Carousel */}
+                <div className="relative group mb-16">
+                    {/* Navigation Buttons */}
+                    <button
+                        onClick={() => scroll('left')}
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 rounded-full bg-[var(--color-surface)] border border-[var(--glass-border)] flex items-center justify-center text-[var(--color-text)] shadow-lg hover:bg-[var(--color-primary)] hover:text-white transition-all opacity-100"
+                        aria-label="Previous testimonial"
+                    >
+                        ←
+                    </button>
+                    <button
+                        onClick={() => scroll('right')}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 rounded-full bg-[var(--color-surface)] border border-[var(--glass-border)] flex items-center justify-center text-[var(--color-text)] shadow-lg hover:bg-[var(--color-primary)] hover:text-white transition-all opacity-100"
+                        aria-label="Next testimonial"
+                    >
+                        →
+                    </button>
+
+                    {/* Carousel Container */}
+                    <div
+                        ref={scrollContainerRef}
+                        className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-6 pb-4 px-2"
+                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    >
+                        {displayTestimonials.map((testimonial, index) => (
+                            <div
+                                key={testimonial.id || index}
+                                className="min-w-full md:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)] snap-center flex"
+                            >
+                                <Card className="flex flex-col w-full h-full">
+                                    <div className="flex items-center gap-1 mb-4">
+                                        {[...Array(5)].map((_, i) => (
+                                            <span
+                                                key={i}
+                                                className={`text-lg ${i < (testimonial.rating || 5)
+                                                    ? 'text-yellow-400'
+                                                    : 'text-[var(--color-surface-light)]'
+                                                    }`}
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                    </div>
+                                    <p className="text-[var(--color-text)] italic mb-4 flex-1">
+                                        "{testimonial.content}"
+                                    </p>
+                                    <div className="border-t border-[var(--glass-border)] pt-4">
+                                        <p className="font-semibold">{testimonial.authorName || testimonial.name}</p>
+                                        <p className="text-sm text-[var(--color-text-muted)]">
+                                            {testimonial.authorRole}
+                                        </p>
+                                    </div>
+                                </Card>
                             </div>
-                            <p className="text-[var(--color-text)] italic mb-4 flex-1">
-                                "{testimonial.content}"
-                            </p>
-                            <div className="border-t border-[var(--glass-border)] pt-4">
-                                <p className="font-semibold">{testimonial.name}</p>
-                                <p className="text-sm text-[var(--color-text-muted)]">
-                                    {testimonial.role}
-                                </p>
-                            </div>
-                        </Card>
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
                 {/* Submit Testimonial Section */}

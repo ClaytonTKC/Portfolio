@@ -10,3 +10,5 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'portfolio');
 
 -- Run initial schema migration
 \i /docker-entrypoint-initdb.d/migrations/001_initial_schema.sql
+\i /docker-entrypoint-initdb.d/migrations/002_add_subject.sql
+\i /docker-entrypoint-initdb.d/migrations/003_seed_testimonials.sql

@@ -441,8 +441,12 @@ func (h *PortfolioHandler) GetApprovedTestimonials(c *gin.Context) {
 }
 
 func (h *PortfolioHandler) GetAllTestimonials(c *gin.Context) {
-	// Placeholder - would integrate GetAllTestimonials in repo
-	c.JSON(http.StatusOK, gin.H{"message": "Not implemented"})
+	testimonials, err := h.repo.GetAllTestimonials(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, testimonials)
 }
 
 func (h *PortfolioHandler) SubmitTestimonial(c *gin.Context) {
@@ -451,22 +455,48 @@ func (h *PortfolioHandler) SubmitTestimonial(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// Placeholder
-	c.JSON(http.StatusCreated, gin.H{"message": "Submitted"})
+	
+	testimonial := model.Testimonial{
+		AuthorName:  req.AuthorName,
+		AuthorRole:  req.AuthorRole,
+		AuthorEmail: req.AuthorEmail,
+		Content:     req.Content,
+		Rating:      req.Rating,
+		Status:      "pending",
+	}
+
+	createdTestimonial, err := h.repo.CreateTestimonial(c.Request.Context(), testimonial)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, createdTestimonial)
 }
 
 func (h *PortfolioHandler) ApproveTestimonial(c *gin.Context) {
 	id := c.Param("id")
+	if err := h.repo.UpdateTestimonialStatus(c.Request.Context(), id, "approved"); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Testimonial approved", "id": id, "status": "approved"})
 }
 
 func (h *PortfolioHandler) RejectTestimonial(c *gin.Context) {
 	id := c.Param("id")
+	if err := h.repo.UpdateTestimonialStatus(c.Request.Context(), id, "rejected"); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Testimonial rejected", "id": id, "status": "rejected"})
 }
 
 func (h *PortfolioHandler) DeleteTestimonial(c *gin.Context) {
 	id := c.Param("id")
+	if err := h.repo.DeleteTestimonial(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Testimonial deleted", "id": id})
 }
 
@@ -477,21 +507,46 @@ func (h *PortfolioHandler) SubmitMessage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// Placeholder
-	c.JSON(http.StatusCreated, gin.H{"message": "Submitted"})
+	
+	msg := model.Message{
+		Name:    req.Name,
+		Email:   req.Email,
+		Subject: req.Subject,
+		Content: req.Content,
+		Read:    false,
+	}
+
+	createdMsg, err := h.repo.CreateMessage(c.Request.Context(), msg)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, createdMsg)
 }
 
 func (h *PortfolioHandler) GetMessages(c *gin.Context) {
-	// Placeholder
-	c.JSON(http.StatusOK, []string{})
+	messages, err := h.repo.GetMessages(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, messages)
 }
 
 func (h *PortfolioHandler) MarkMessageRead(c *gin.Context) {
 	id := c.Param("id")
+	if err := h.repo.MarkMessageRead(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Message marked as read", "id": id})
 }
 
 func (h *PortfolioHandler) DeleteMessage(c *gin.Context) {
 	id := c.Param("id")
+	if err := h.repo.DeleteMessage(c.Request.Context(), id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "Message deleted", "id": id})
 }

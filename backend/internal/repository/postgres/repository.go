@@ -311,3 +311,87 @@ func (r *Repository) GetApprovedTestimonials(ctx context.Context) ([]model.Testi
 	}
 	return testimonials, nil
 }
+
+func (r *Repository) GetAllTestimonials(ctx context.Context) ([]model.Testimonial, error) {
+	query := `SELECT id, author_name, author_role, author_email, content, rating, status, created_at, updated_at FROM testimonials ORDER BY created_at DESC`
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	testimonials := []model.Testimonial{}
+	for rows.Next() {
+		var t model.Testimonial
+		if err := rows.Scan(&t.ID, &t.AuthorName, &t.AuthorRole, &t.AuthorEmail, &t.Content, &t.Rating, &t.Status, &t.CreatedAt, &t.UpdatedAt); err != nil {
+			return nil, err
+		}
+		testimonials = append(testimonials, t)
+	}
+	return testimonials, nil
+}
+
+func (r *Repository) CreateTestimonial(ctx context.Context, t model.Testimonial) (model.Testimonial, error) {
+	query := `
+		INSERT INTO testimonials (author_name, author_role, author_email, content, rating, status)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id, created_at, updated_at
+	`
+	err := r.db.QueryRow(ctx, query, t.AuthorName, t.AuthorRole, t.AuthorEmail, t.Content, t.Rating, t.Status).Scan(&t.ID, &t.CreatedAt, &t.UpdatedAt)
+	return t, err
+}
+
+func (r *Repository) UpdateTestimonialStatus(ctx context.Context, id, status string) error {
+	query := `UPDATE testimonials SET status = $1, updated_at = NOW() WHERE id = $2`
+	_, err := r.db.Exec(ctx, query, status, id)
+	return err
+}
+
+func (r *Repository) DeleteTestimonial(ctx context.Context, id string) error {
+	query := `DELETE FROM testimonials WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
+}
+
+// === Messages ===
+
+func (r *Repository) GetMessages(ctx context.Context) ([]model.Message, error) {
+	query := `SELECT id, name, email, subject, content, is_read, created_at FROM messages ORDER BY created_at DESC`
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	messages := []model.Message{}
+	for rows.Next() {
+		var m model.Message
+		if err := rows.Scan(&m.ID, &m.Name, &m.Email, &m.Subject, &m.Content, &m.Read, &m.CreatedAt); err != nil {
+			return nil, err
+		}
+		messages = append(messages, m)
+	}
+	return messages, nil
+}
+
+func (r *Repository) CreateMessage(ctx context.Context, m model.Message) (model.Message, error) {
+	query := `
+		INSERT INTO messages (name, email, subject, content, is_read)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, created_at
+	`
+	err := r.db.QueryRow(ctx, query, m.Name, m.Email, m.Subject, m.Content, m.Read).Scan(&m.ID, &m.CreatedAt)
+	return m, err
+}
+
+func (r *Repository) MarkMessageRead(ctx context.Context, id string) error {
+	query := `UPDATE messages SET is_read = TRUE WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
+}
+
+func (r *Repository) DeleteMessage(ctx context.Context, id string) error {
+	query := `DELETE FROM messages WHERE id = $1`
+	_, err := r.db.Exec(ctx, query, id)
+	return err
+}

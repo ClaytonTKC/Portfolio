@@ -28,18 +28,4 @@ type UpdateTestimonialRequest struct {
 	Status string `json:"status"` // For admin to approve/reject
 }
 
-// Message - contact form submissions from visitors
-type Message struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Content   string    `json:"content"`
-	Read      bool      `json:"read"`
-	CreatedAt time.Time `json:"createdAt"`
-}
 
-type CreateMessageRequest struct {
-	Name    string `json:"name" binding:"required"`
-	Email   string `json:"email" binding:"required,email"`
-	Content string `json:"content" binding:"required"`
-}

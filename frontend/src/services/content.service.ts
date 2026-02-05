@@ -58,6 +58,11 @@ export interface Testimonial {
     content: string;
     date: string;
     status?: 'pending' | 'approved' | 'rejected';
+    authorName?: string;
+    authorRole?: string;
+    authorEmail?: string;
+    rating?: number;
+    createdAt?: string;
 }
 
 export interface Message {
@@ -65,8 +70,10 @@ export interface Message {
     name: string;
     email: string;
     subject: string;
+    content: string;
     date: string;
     read?: boolean;
+    createdAt?: string;
 }
 
 export const contentService = {
@@ -172,19 +179,60 @@ export const contentService = {
     },
 
     // Testimonials & Messages (Mocked for now)
+    // Testimonials
     async getPendingTestimonials(): Promise<Testimonial[]> {
-        // Mock data matching AdminDashboard
-        return [
-            { id: '1', name: 'New User', content: 'Great portfolio!', date: '2 hours ago', status: 'pending' },
-            { id: '2', name: 'Client X', content: 'Amazing work on our project...', date: '1 day ago', status: 'pending' },
-        ];
+        const response = await client.get<Testimonial[]>('/admin/testimonials');
+        return response.data.filter(t => t.status === 'pending');
     },
 
+    async getAllTestimonials(): Promise<Testimonial[]> {
+        const response = await client.get<Testimonial[]>('/admin/testimonials');
+        return response.data;
+    },
+
+    async approveTestimonial(id: string): Promise<void> {
+        await client.put(`/admin/testimonials/${id}/approve`);
+    },
+
+    async rejectTestimonial(id: string): Promise<void> {
+        await client.put(`/admin/testimonials/${id}/reject`);
+    },
+
+    async deleteTestimonial(id: string): Promise<void> {
+        await client.delete(`/admin/testimonials/${id}`);
+    },
+
+    async createTestimonial(testimonial: Partial<Testimonial>): Promise<Testimonial> {
+        const response = await client.post<Testimonial>('/public/testimonials', testimonial);
+        return response.data;
+    },
+
+    async getApprovedTestimonials(): Promise<Testimonial[]> {
+        const response = await client.get<Testimonial[]>('/public/testimonials');
+        return response.data;
+    },
+
+    // Messages
     async getRecentMessages(): Promise<Message[]> {
-        // Mock data matching AdminDashboard
-        return [
-            { id: '1', name: 'Clay Smith', email: 'Clay@example.com', subject: 'Project inquiry', date: '1 hour ago' },
-            { id: '2', name: 'Jane Doe', email: 'jane@example.com', subject: 'Collaboration opportunity', date: '3 hours ago' },
-        ];
+        const response = await client.get<Message[]>('/admin/messages');
+        return response.data.slice(0, 5); // Return only recent 5
+    },
+
+    async getMessages(): Promise<Message[]> {
+        const response = await client.get<Message[]>('/admin/messages');
+        return response.data;
+    },
+
+    async createMessage(message: Partial<Message>): Promise<Message> {
+        const response = await client.post<Message>('/public/contact', message);
+        return response.data;
+    },
+
+    async markMessageRead(id: string): Promise<void> {
+        await client.put(`/admin/messages/${id}/read`);
+    },
+
+    async deleteMessage(id: string): Promise<void> {
+        await client.delete(`/admin/messages/${id}`);
     }
 };

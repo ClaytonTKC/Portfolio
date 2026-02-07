@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { contentService, type Experience as ExperienceType } from '../../services/content.service';
 
 export const Experience: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [experiences, setExperiences] = useState<ExperienceType[]>([]);
     const [loading, setLoading] = useState(true);
+    const isFrench = i18n.language === 'fr';
 
     useEffect(() => {
         const fetchExperiences = async () => {
@@ -55,15 +56,15 @@ export const Experience: React.FC = () => {
                                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
                                     <div>
                                         <h3 className="text-xl font-semibold text-[var(--color-text)]">
-                                            {exp.title}
+                                            {(isFrench && exp.titleFr) ? exp.titleFr : exp.title}
                                         </h3>
                                         <p className="text-[var(--color-primary)] font-medium">
-                                            {exp.company}
+                                            {(isFrench && exp.companyFr) ? exp.companyFr : exp.company}
                                         </p>
                                     </div>
                                     <div className="text-right">
                                         <p className="text-[var(--color-text-muted)] text-sm">
-                                            {exp.location}
+                                            {(isFrench && exp.locationFr) ? exp.locationFr : exp.location}
                                         </p>
                                         <p className="text-[var(--color-secondary)] font-medium text-sm">
                                             {new Date(exp.startDate).getFullYear()} -
@@ -73,7 +74,7 @@ export const Experience: React.FC = () => {
                                 </div>
 
                                 <ul className="space-y-2">
-                                    {exp.description.map((item, i) => (
+                                    {((isFrench && exp.descriptionFr && exp.descriptionFr.length > 0) ? exp.descriptionFr : exp.description).map((item, i) => (
                                         <li
                                             key={i}
                                             className="flex items-start gap-3 text-[var(--color-text-muted)]"

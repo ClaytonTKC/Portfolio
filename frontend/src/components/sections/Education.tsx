@@ -4,9 +4,10 @@ import { Card } from '../ui/Card';
 import { contentService, type Education as EducationType } from '../../services/content.service';
 
 export const Education: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [education, setEducation] = useState<EducationType[]>([]);
     const [loading, setLoading] = useState(true);
+    const isFrench = i18n.language === 'fr';
 
     useEffect(() => {
         const fetchEducation = async () => {
@@ -57,14 +58,18 @@ export const Education: React.FC = () => {
                                     🎓
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-semibold mb-1">{edu.degree}</h3>
-                                    <p className="text-[var(--color-primary)] font-medium">{edu.school}</p>
+                                    <h3 className="text-lg font-semibold mb-1">
+                                        {(isFrench && edu.degreeFr) ? edu.degreeFr : edu.degree}
+                                    </h3>
+                                    <p className="text-[var(--color-primary)] font-medium">
+                                        {(isFrench && edu.schoolFr) ? edu.schoolFr : edu.school}
+                                    </p>
                                     <p className="text-sm text-[var(--color-text-muted)] mb-2">
-                                        {edu.location} • {new Date(edu.startDate).getFullYear()} -
+                                        {(isFrench && edu.locationFr) ? edu.locationFr : edu.location} • {new Date(edu.startDate).getFullYear()} -
                                         {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
                                     </p>
                                     <p className="text-sm text-[var(--color-text-muted)]">
-                                        {edu.description}
+                                        {(isFrench && edu.descriptionFr) ? edu.descriptionFr : edu.description}
                                     </p>
                                 </div>
                             </div>

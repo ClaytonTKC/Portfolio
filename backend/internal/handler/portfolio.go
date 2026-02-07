@@ -82,11 +82,12 @@ func (h *PortfolioHandler) CreateSkill(c *gin.Context) {
 		return
 	}
 	skill := model.Skill{
-		Name:        req.Name,
-		Icon:        req.Icon,
-		Proficiency: req.Proficiency,
-		Category:    req.Category,
-		SortOrder:   req.SortOrder,
+		Name:            req.Name,
+		Icon:            req.Icon,
+		Proficiency:     req.Proficiency,
+		Category:        req.Category,
+		SortOrder:       req.SortOrder,
+		ShowInPortfolio: req.ShowInPortfolio,
 	}
 	createdSkill, err := h.repo.CreateSkill(c.Request.Context(), skill)
 	if err != nil {
@@ -104,12 +105,13 @@ func (h *PortfolioHandler) UpdateSkill(c *gin.Context) {
 		return
 	}
 	skill := model.Skill{
-		ID:          id,
-		Name:        req.Name,
-		Icon:        req.Icon,
-		Proficiency: req.Proficiency,
-		Category:    req.Category,
-		SortOrder:   req.SortOrder,
+		ID:              id,
+		Name:            req.Name,
+		Icon:            req.Icon,
+		Proficiency:     req.Proficiency,
+		Category:        req.Category,
+		SortOrder:       req.SortOrder,
+		ShowInPortfolio: req.ShowInPortfolio,
 	}
 	updatedSkill, err := h.repo.UpdateSkill(c.Request.Context(), skill)
 	if err != nil {
@@ -225,14 +227,18 @@ func (h *PortfolioHandler) CreateExperience(c *gin.Context) {
 	}
 
 	exp := model.Experience{
-		Title:       req.Title,
-		Company:     req.Company,
-		Location:    req.Location,
-		StartDate:   startDate,
-		EndDate:     endDate,
-		Current:     req.Current,
-		Description: req.Description,
-		SortOrder:   req.SortOrder,
+		Title:         req.Title,
+		TitleFr:       req.TitleFr,
+		Company:       req.Company,
+		CompanyFr:     req.CompanyFr,
+		Location:      req.Location,
+		LocationFr:    req.LocationFr,
+		StartDate:     startDate,
+		EndDate:       endDate,
+		Current:       req.Current,
+		Description:   req.Description,
+		DescriptionFr: req.DescriptionFr,
+		SortOrder:     req.SortOrder,
 	}
 
 	createdExp, err := h.repo.CreateExperience(c.Request.Context(), exp)
@@ -260,15 +266,19 @@ func (h *PortfolioHandler) UpdateExperience(c *gin.Context) {
 	}
 
 	exp := model.Experience{
-		ID:          id,
-		Title:       req.Title,
-		Company:     req.Company,
-		Location:    req.Location,
-		StartDate:   startDate,
-		EndDate:     endDate,
-		Current:     req.Current,
-		Description: req.Description,
-		SortOrder:   req.SortOrder,
+		ID:            id,
+		Title:         req.Title,
+		TitleFr:       req.TitleFr,
+		Company:       req.Company,
+		CompanyFr:     req.CompanyFr,
+		Location:      req.Location,
+		LocationFr:    req.LocationFr,
+		StartDate:     startDate,
+		EndDate:       endDate,
+		Current:       req.Current,
+		Description:   req.Description,
+		DescriptionFr: req.DescriptionFr,
+		SortOrder:     req.SortOrder,
 	}
 
 	updatedExp, err := h.repo.UpdateExperience(c.Request.Context(), exp)
@@ -312,13 +322,17 @@ func (h *PortfolioHandler) CreateEducation(c *gin.Context) {
 	}
 
 	edu := model.Education{
-		Degree:      req.Degree,
-		School:      req.School,
-		Location:    req.Location,
-		StartDate:   startDate,
-		EndDate:     endDate,
-		Description: req.Description,
-		SortOrder:   req.SortOrder,
+		Degree:        req.Degree,
+		DegreeFr:      req.DegreeFr,
+		School:        req.School,
+		SchoolFr:      req.SchoolFr,
+		Location:      req.Location,
+		LocationFr:    req.LocationFr,
+		StartDate:     startDate,
+		EndDate:       endDate,
+		Description:   req.Description,
+		DescriptionFr: req.DescriptionFr,
+		SortOrder:     req.SortOrder,
 	}
 
 	createdEdu, err := h.repo.CreateEducation(c.Request.Context(), edu)
@@ -346,14 +360,18 @@ func (h *PortfolioHandler) UpdateEducation(c *gin.Context) {
 	}
 
 	edu := model.Education{
-		ID:          id,
-		Degree:      req.Degree,
-		School:      req.School,
-		Location:    req.Location,
-		StartDate:   startDate,
-		EndDate:     endDate,
-		Description: req.Description,
-		SortOrder:   req.SortOrder,
+		ID:            id,
+		Degree:        req.Degree,
+		DegreeFr:      req.DegreeFr,
+		School:        req.School,
+		SchoolFr:      req.SchoolFr,
+		Location:      req.Location,
+		LocationFr:    req.LocationFr,
+		StartDate:     startDate,
+		EndDate:       endDate,
+		Description:   req.Description,
+		DescriptionFr: req.DescriptionFr,
+		SortOrder:     req.SortOrder,
 	}
 
 	updatedEdu, err := h.repo.UpdateEducation(c.Request.Context(), edu)

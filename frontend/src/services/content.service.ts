@@ -21,28 +21,37 @@ export interface Skill {
     proficiency: number;
     category?: string;
     sortOrder?: number;
+    showInPortfolio?: boolean; // New field
 }
 
 export interface Experience {
     id?: string;
     title: string;
+    titleFr?: string;
     company: string;
+    companyFr?: string;
     location: string;
+    locationFr?: string;
     startDate: string;
     endDate?: string;
     current: boolean;
     description: string[];
+    descriptionFr?: string[];
     sortOrder?: number;
 }
 
 export interface Education {
     id?: string;
     degree: string;
+    degreeFr?: string;
     school: string;
+    schoolFr?: string;
     location: string;
+    locationFr?: string;
     startDate: string;
     endDate?: string;
     description: string;
+    descriptionFr?: string;
     sortOrder?: number;
 }
 

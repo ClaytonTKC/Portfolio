@@ -65,9 +65,14 @@ export const Skills: React.FC = () => {
                 <div className="max-w-4xl mx-auto space-y-12">
                     {Object.entries(
                         skills.reduce((acc, skill) => {
+                            if (skill.showInPortfolio === false) return acc;
+
                             const category = skill.category || 'Other';
                             if (!acc[category]) acc[category] = [];
-                            acc[category].push(skill);
+
+                            if (acc[category].length < 4) {
+                                acc[category].push(skill);
+                            }
                             return acc;
                         }, {} as Record<string, Skill[]>)
                     ).map(([category, categorySkills]) => (

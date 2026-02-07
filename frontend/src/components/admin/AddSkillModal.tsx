@@ -18,6 +18,7 @@ export const AddSkillModal: React.FC<AddSkillModalProps> = ({ isOpen, onClose, s
         icon: '',
         proficiency: 100,
         category: 'Languages',
+        showInPortfolio: true,
     });
     const [statusModal, setStatusModal] = useState<{ isOpen: boolean; type: 'success' | 'error'; title: string; message: string }>({
         isOpen: false,
@@ -33,6 +34,7 @@ export const AddSkillModal: React.FC<AddSkillModalProps> = ({ isOpen, onClose, s
                 icon: skill.icon || '',
                 proficiency: skill.proficiency,
                 category: skill.category || 'Frontend',
+                showInPortfolio: skill.showInPortfolio !== undefined ? skill.showInPortfolio : true,
             });
         } else {
             setFormData({
@@ -40,6 +42,7 @@ export const AddSkillModal: React.FC<AddSkillModalProps> = ({ isOpen, onClose, s
                 icon: '',
                 proficiency: 100,
                 category: 'Languages',
+                showInPortfolio: true,
             });
         }
     }, [skill, isOpen]);
@@ -138,6 +141,20 @@ export const AddSkillModal: React.FC<AddSkillModalProps> = ({ isOpen, onClose, s
                                 <option value="Other">Other</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            name="showInPortfolio"
+                            id="showInPortfolio"
+                            checked={formData.showInPortfolio}
+                            onChange={(e) => setFormData(prev => ({ ...prev, showInPortfolio: e.target.checked }))}
+                            className="rounded bg-[var(--color-surface)] border-[var(--glass-border)] text-[var(--color-primary)] focus:ring-[var(--color-primary)]"
+                        />
+                        <label htmlFor="showInPortfolio" className="text-sm font-medium">
+                            Show in Portfolio
+                        </label>
                     </div>
 
 

@@ -12,6 +12,19 @@ export const ManageSkills: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedSkill, setSelectedSkill] = useState<Skill | undefined>(undefined);
+    const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+
+    const toggleCategory = (category: string) => {
+        setCollapsedCategories(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(category)) {
+                newSet.delete(category);
+            } else {
+                newSet.add(category);
+            }
+            return newSet;
+        });
+    };
 
     // Modal states
     const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean; id: string | null }>({
@@ -97,33 +110,66 @@ export const ManageSkills: React.FC = () => {
                 </Button>
             </div>
 
-            <div className="grid gap-4">
-                {skills.map((skill) => (
-                    <Card key={skill.id} hover={false} className="flex justify-between items-center p-4">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded bg-[var(--color-surface)] flex items-center justify-center text-xl">
-                                {skill.icon || '⚡'}
+            <div className="space-y-4">
+                {Object.entries(
+                    skills.reduce((acc, skill) => {
+                        const category = skill.category || 'Other';
+                        if (!acc[category]) acc[category] = [];
+                        acc[category].push(skill);
+                        return acc;
+                    }, {} as Record<string, Skill[]>)
+                ).map(([category, categorySkills]) => (
+                    <div key={category} className="border border-[var(--glass-border)] rounded-lg overflow-hidden bg-[var(--glass-bg)]">
+                        <button
+                            onClick={() => toggleCategory(category)}
+                            className="w-full flex items-center justify-between p-4 bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] transition-colors text-left"
+                        >
+                            <h3 className="text-xl font-bold text-[var(--color-primary)]">{category}</h3>
+                            <span className="text-2xl transform transition-transform duration-200" style={{
+                                transform: collapsedCategories.has(category) ? 'rotate(-90deg)' : 'rotate(0deg)'
+                            }}>
+                                ▼
+                            </span>
+                        </button>
+
+                        {!collapsedCategories.has(category) && (
+                            <div className="p-4 grid gap-4 bg-[var(--glass-bg)]">
+                                {categorySkills.map((skill) => (
+                                    <Card key={skill.id} hover={false} className="flex justify-between items-center p-4">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded bg-[var(--color-surface)] flex items-center justify-center text-xl">
+                                                {skill.icon || '⚡'}
+                                            </div>
+                                            <div>
+                                                <h3 className="font-semibold">{skill.name}</h3>
+                                                <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+                                                    <span>{skill.category || 'General'}</span>
+                                                </div>
+                                                {/* Show visibility status */}
+                                                {!skill.showInPortfolio && (
+                                                    <span className="text-xs text-yellow-500 font-medium">
+                                                        Hidden from Portfolio
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button variant="secondary" onClick={() => handleEdit(skill)}>
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                variant="secondary"
+                                                className="!bg-red-500/10 !text-red-500 hover:!bg-red-500/20"
+                                                onClick={() => handleRequestDelete(skill.id!)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                ))}
                             </div>
-                            <div>
-                                <h3 className="font-semibold">{skill.name}</h3>
-                                <div className="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
-                                    <span>{skill.category || 'General'}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex gap-2">
-                            <Button variant="secondary" onClick={() => handleEdit(skill)}>
-                                Edit
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                className="!bg-red-500/10 !text-red-500 hover:!bg-red-500/20"
-                                onClick={() => handleRequestDelete(skill.id!)}
-                            >
-                                Delete
-                            </Button>
-                        </div>
-                    </Card>
+                        )}
+                    </div>
                 ))}
             </div>
 

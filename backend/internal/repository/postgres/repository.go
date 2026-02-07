@@ -39,7 +39,7 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 // === Skills ===
 
 func (r *Repository) GetSkills(ctx context.Context) ([]model.Skill, error) {
-	query := `SELECT id, name, COALESCE(icon, ''), proficiency, COALESCE(category, ''), sort_order FROM skills ORDER BY proficiency DESC`
+	query := `SELECT id, name, COALESCE(icon, ''), proficiency, COALESCE(category, ''), sort_order, show_in_portfolio FROM skills ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (r *Repository) GetSkills(ctx context.Context) ([]model.Skill, error) {
 	var skills []model.Skill
 	for rows.Next() {
 		var s model.Skill
-		if err := rows.Scan(&s.ID, &s.Name, &s.Icon, &s.Proficiency, &s.Category, &s.SortOrder); err != nil {
+		if err := rows.Scan(&s.ID, &s.Name, &s.Icon, &s.Proficiency, &s.Category, &s.SortOrder, &s.ShowInPortfolio); err != nil {
 			return nil, err
 		}
 		skills = append(skills, s)
@@ -59,22 +59,22 @@ func (r *Repository) GetSkills(ctx context.Context) ([]model.Skill, error) {
 
 func (r *Repository) CreateSkill(ctx context.Context, s model.Skill) (model.Skill, error) {
 	query := `
-		INSERT INTO skills (name, icon, proficiency, category, sort_order)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO skills (name, icon, proficiency, category, sort_order, show_in_portfolio)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id, created_at, updated_at
 	`
-	err := r.db.QueryRow(ctx, query, s.Name, s.Icon, s.Proficiency, s.Category, s.SortOrder).Scan(&s.ID, &s.CreatedAt, &s.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, s.Name, s.Icon, s.Proficiency, s.Category, s.SortOrder, s.ShowInPortfolio).Scan(&s.ID, &s.CreatedAt, &s.UpdatedAt)
 	return s, err
 }
 
 func (r *Repository) UpdateSkill(ctx context.Context, s model.Skill) (model.Skill, error) {
 	query := `
 		UPDATE skills 
-		SET name = $1, icon = $2, proficiency = $3, category = $4, sort_order = $5, updated_at = NOW()
-		WHERE id = $6
+		SET name = $1, icon = $2, proficiency = $3, category = $4, sort_order = $5, show_in_portfolio = $6, updated_at = NOW()
+		WHERE id = $7
 		RETURNING created_at, updated_at
 	`
-	err := r.db.QueryRow(ctx, query, s.Name, s.Icon, s.Proficiency, s.Category, s.SortOrder, s.ID).Scan(&s.CreatedAt, &s.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, s.Name, s.Icon, s.Proficiency, s.Category, s.SortOrder, s.ShowInPortfolio, s.ID).Scan(&s.CreatedAt, &s.UpdatedAt)
 	return s, err
 }
 
@@ -135,7 +135,7 @@ func (r *Repository) DeleteProject(ctx context.Context, id string) error {
 // === Experience ===
 
 func (r *Repository) GetExperiences(ctx context.Context) ([]model.Experience, error) {
-	query := `SELECT id, title, company, location, start_date, end_date, is_current, description, sort_order FROM experiences ORDER BY sort_order ASC`
+	query := `SELECT id, title, COALESCE(title_fr, ''), company, COALESCE(company_fr, ''), location, COALESCE(location_fr, ''), start_date, end_date, is_current, description, COALESCE(description_fr, '{}'), sort_order FROM experiences ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ func (r *Repository) GetExperiences(ctx context.Context) ([]model.Experience, er
 		// Handle nullable end_date
 		var endDatePtr *time.Time
 		
-		if err := rows.Scan(&e.ID, &e.Title, &e.Company, &e.Location, &startDate, &endDatePtr, &e.Current, &e.Description, &e.SortOrder); err != nil {
+		if err := rows.Scan(&e.ID, &e.Title, &e.TitleFr, &e.Company, &e.CompanyFr, &e.Location, &e.LocationFr, &startDate, &endDatePtr, &e.Current, &e.Description, &e.DescriptionFr, &e.SortOrder); err != nil {
 			return nil, err
 		}
 		e.StartDate = startDate
@@ -163,22 +163,22 @@ func (r *Repository) GetExperiences(ctx context.Context) ([]model.Experience, er
 
 func (r *Repository) CreateExperience(ctx context.Context, e model.Experience) (model.Experience, error) {
 	query := `
-		INSERT INTO experiences (title, company, location, start_date, end_date, is_current, description, sort_order)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO experiences (title, title_fr, company, company_fr, location, location_fr, start_date, end_date, is_current, description, description_fr, sort_order)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 		RETURNING id, created_at, updated_at
 	`
-	err := r.db.QueryRow(ctx, query, e.Title, e.Company, e.Location, e.StartDate, e.EndDate, e.Current, e.Description, e.SortOrder).Scan(&e.ID, &e.CreatedAt, &e.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, e.Title, e.TitleFr, e.Company, e.CompanyFr, e.Location, e.LocationFr, e.StartDate, e.EndDate, e.Current, e.Description, e.DescriptionFr, e.SortOrder).Scan(&e.ID, &e.CreatedAt, &e.UpdatedAt)
 	return e, err
 }
 
 func (r *Repository) UpdateExperience(ctx context.Context, e model.Experience) (model.Experience, error) {
 	query := `
 		UPDATE experiences
-		SET title = $1, company = $2, location = $3, start_date = $4, end_date = $5, is_current = $6, description = $7, sort_order = $8, updated_at = NOW()
-		WHERE id = $9
+		SET title = $1, title_fr = $2, company = $3, company_fr = $4, location = $5, location_fr = $6, start_date = $7, end_date = $8, is_current = $9, description = $10, description_fr = $11, sort_order = $12, updated_at = NOW()
+		WHERE id = $13
 		RETURNING created_at, updated_at
 	`
-	err := r.db.QueryRow(ctx, query, e.Title, e.Company, e.Location, e.StartDate, e.EndDate, e.Current, e.Description, e.SortOrder, e.ID).Scan(&e.CreatedAt, &e.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, e.Title, e.TitleFr, e.Company, e.CompanyFr, e.Location, e.LocationFr, e.StartDate, e.EndDate, e.Current, e.Description, e.DescriptionFr, e.SortOrder, e.ID).Scan(&e.CreatedAt, &e.UpdatedAt)
 	return e, err
 }
 
@@ -191,7 +191,7 @@ func (r *Repository) DeleteExperience(ctx context.Context, id string) error {
 // === Education ===
 
 func (r *Repository) GetEducation(ctx context.Context) ([]model.Education, error) {
-	query := `SELECT id, degree, school, location, start_date, end_date, description, sort_order FROM education ORDER BY sort_order ASC`
+	query := `SELECT id, degree, COALESCE(degree_fr, ''), school, COALESCE(school_fr, ''), location, COALESCE(location_fr, ''), start_date, end_date, description, COALESCE(description_fr, ''), sort_order FROM education ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -204,7 +204,7 @@ func (r *Repository) GetEducation(ctx context.Context) ([]model.Education, error
 		var startDate time.Time
 		var endDatePtr *time.Time
 		
-		if err := rows.Scan(&e.ID, &e.Degree, &e.School, &e.Location, &startDate, &endDatePtr, &e.Description, &e.SortOrder); err != nil {
+		if err := rows.Scan(&e.ID, &e.Degree, &e.DegreeFr, &e.School, &e.SchoolFr, &e.Location, &e.LocationFr, &startDate, &endDatePtr, &e.Description, &e.DescriptionFr, &e.SortOrder); err != nil {
 			return nil, err
 		}
 		e.StartDate = startDate
@@ -218,22 +218,22 @@ func (r *Repository) GetEducation(ctx context.Context) ([]model.Education, error
 
 func (r *Repository) CreateEducation(ctx context.Context, e model.Education) (model.Education, error) {
 	query := `
-		INSERT INTO education (degree, school, location, start_date, end_date, description, sort_order)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO education (degree, degree_fr, school, school_fr, location, location_fr, start_date, end_date, description, description_fr, sort_order)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 		RETURNING id, created_at, updated_at
 	`
-	err := r.db.QueryRow(ctx, query, e.Degree, e.School, e.Location, e.StartDate, e.EndDate, e.Description, e.SortOrder).Scan(&e.ID, &e.CreatedAt, &e.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, e.Degree, e.DegreeFr, e.School, e.SchoolFr, e.Location, e.LocationFr, e.StartDate, e.EndDate, e.Description, e.DescriptionFr, e.SortOrder).Scan(&e.ID, &e.CreatedAt, &e.UpdatedAt)
 	return e, err
 }
 
 func (r *Repository) UpdateEducation(ctx context.Context, e model.Education) (model.Education, error) {
 	query := `
 		UPDATE education
-		SET degree = $1, school = $2, location = $3, start_date = $4, end_date = $5, description = $6, sort_order = $7, updated_at = NOW()
-		WHERE id = $8
+		SET degree = $1, degree_fr = $2, school = $3, school_fr = $4, location = $5, location_fr = $6, start_date = $7, end_date = $8, description = $9, description_fr = $10, sort_order = $11, updated_at = NOW()
+		WHERE id = $12
 		RETURNING created_at, updated_at
 	`
-	err := r.db.QueryRow(ctx, query, e.Degree, e.School, e.Location, e.StartDate, e.EndDate, e.Description, e.SortOrder, e.ID).Scan(&e.CreatedAt, &e.UpdatedAt)
+	err := r.db.QueryRow(ctx, query, e.Degree, e.DegreeFr, e.School, e.SchoolFr, e.Location, e.LocationFr, e.StartDate, e.EndDate, e.Description, e.DescriptionFr, e.SortOrder, e.ID).Scan(&e.CreatedAt, &e.UpdatedAt)
 	return e, err
 }
 

@@ -572,3 +572,13 @@ func (h *PortfolioHandler) DeleteMessage(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Message deleted", "id": id})
 }
+
+
+func (h *PortfolioHandler) GetContactInfo(c *gin.Context) {
+	info, err := h.repo.GetContactInfo(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch contact info"})
+		return
+	}
+	c.JSON(http.StatusOK, info)
+}

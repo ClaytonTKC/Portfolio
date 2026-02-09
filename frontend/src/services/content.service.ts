@@ -87,7 +87,30 @@ export interface Message {
     createdAt?: string;
 }
 
+
+export interface ContactInfo {
+    id: string;
+    email: string;
+    phone: string;
+    location: string;
+    linkedin: string;
+    github: string;
+    twitter: string;
+    website: string;
+}
+
 export const contentService = {
+    // Contact Info
+    async getContactInfo(): Promise<ContactInfo> {
+        const response = await client.get<ContactInfo>('/public/contact-info');
+        return response.data;
+    },
+
+    async updateContactInfo(info: Partial<ContactInfo>): Promise<ContactInfo> {
+        const response = await client.put<ContactInfo>('/admin/contact-info', info);
+        return response.data;
+    },
+
     // Projects
     async createProject(project: Project): Promise<Project> {
         const response = await client.post<Project>('/admin/projects', project);

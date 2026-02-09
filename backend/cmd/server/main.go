@@ -84,6 +84,9 @@ func main() {
 			
 			// Submit contact message
 			public.POST("/contact", portfolioHandler.SubmitMessage)
+
+			// Get contact info
+			public.GET("/contact-info", portfolioHandler.GetContactInfo)
 		}
 
 		// Admin authentication

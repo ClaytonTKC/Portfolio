@@ -61,16 +61,12 @@ func (h *AdminHandler) GetProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, admin)
 }
 
+
 func (h *AdminHandler) GetContactInfo(c *gin.Context) {
-	// Placeholder
-	info := model.ContactInfo{
-		ID:       "1",
-		Email:    "claudio@portfolio.com",
-		Phone:    "+1 234 567 8900",
-		Location: "Montreal, Quebec, Canada",
-		LinkedIn: "johndoe",
-		GitHub:   "johndoe",
-		Twitter:  "johndoe",
+	info, err := h.repo.GetContactInfo(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch contact info"})
+		return
 	}
 	c.JSON(http.StatusOK, info)
 }
@@ -82,15 +78,21 @@ func (h *AdminHandler) UpdateContactInfo(c *gin.Context) {
 		return
 	}
 
-	// Placeholder - would update in database
 	info := model.ContactInfo{
-		ID:       "1",
 		Email:    req.Email,
 		Phone:    req.Phone,
 		Location: req.Location,
 		LinkedIn: req.LinkedIn,
 		GitHub:   req.GitHub,
 		Twitter:  req.Twitter,
+		Website:  req.Website,
 	}
-	c.JSON(http.StatusOK, info)
+
+	updated, err := h.repo.UpdateContactInfo(c.Request.Context(), info)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update contact info"})
+		return
+	}
+	
+	c.JSON(http.StatusOK, updated)
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { ConfirmationModal } from '../components/ui/ConfirmationModal';
@@ -7,6 +8,7 @@ import { AddSkillModal } from '../components/admin/AddSkillModal';
 import { contentService, type Testimonial, type Message } from '../services/content.service';
 
 export const AdminDashboard: React.FC = () => {
+    const navigate = useNavigate();
     const [activeModal, setActiveModal] = useState<'project' | 'skill' | null>(null);
     const [pendingTestimonials, setPendingTestimonials] = useState<Testimonial[]>([]);
     const [recentMessages, setRecentMessages] = useState<Message[]>([]);
@@ -98,7 +100,7 @@ export const AdminDashboard: React.FC = () => {
                         Add Skill
                     </Button>
                     <Button variant="secondary">Update Resume</Button>
-                    <Button variant="secondary">Edit Contact Info</Button>
+                    <Button variant="secondary" onClick={() => navigate('/admin/contact-info')}>Edit Contact Info</Button>
                 </div>
             </Card>
 

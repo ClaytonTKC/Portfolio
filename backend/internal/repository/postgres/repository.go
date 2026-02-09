@@ -395,3 +395,64 @@ func (r *Repository) DeleteMessage(ctx context.Context, id string) error {
 	_, err := r.db.Exec(ctx, query, id)
 	return err
 }
+
+// === Contact Info ===
+
+func (r *Repository) GetContactInfo(ctx context.Context) (model.ContactInfo, error) {
+	query := `SELECT id, email, COALESCE(phone, ''), COALESCE(location, ''), COALESCE(linkedin, ''), COALESCE(github, ''), COALESCE(twitter, ''), COALESCE(website, ''), updated_at FROM contact_info LIMIT 1`
+	
+	var info model.ContactInfo
+	err := r.db.QueryRow(ctx, query).Scan(
+		&info.ID, &info.Email, &info.Phone, &info.Location, 
+		&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website, &info.UpdatedAt,
+	)
+	
+	if err != nil {
+		// If no row exists, return empty structure or create default
+		if err.Error() == "no rows in result set" {
+			return model.ContactInfo{}, nil
+		}
+		return model.ContactInfo{}, err
+	}
+	
+	return info, nil
+}
+
+func (r *Repository) UpdateContactInfo(ctx context.Context, info model.ContactInfo) (model.ContactInfo, error) {
+	// Check if record exists
+	existing, err := r.GetContactInfo(ctx)
+	if err != nil {
+		return model.ContactInfo{}, err
+	}
+	
+	var query string
+	if existing.ID == "" {
+		// Create new
+		query = `INSERT INTO contact_info (email, phone, location, linkedin, github, twitter, website, updated_at) 
+				VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP) 
+				RETURNING id, email, phone, location, linkedin, github, twitter, website, updated_at`
+		
+		err = r.db.QueryRow(ctx, query, info.Email, info.Phone, info.Location, info.LinkedIn, info.GitHub, info.Twitter, info.Website).Scan(
+			&info.ID, &info.Email, &info.Phone, &info.Location, 
+			&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website, &info.UpdatedAt,
+		)
+	} else {
+		// Update existing
+		query = `UPDATE contact_info SET email=$1, phone=$2, location=$3, linkedin=$4, github=$5, twitter=$6, website=$7, updated_at=CURRENT_TIMESTAMP 
+				WHERE id=$8 
+				RETURNING id, email, phone, location, linkedin, github, twitter, website, updated_at`
+				
+		err = r.db.QueryRow(ctx, query, info.Email, info.Phone, info.Location, info.LinkedIn, info.GitHub, info.Twitter, info.Website, existing.ID).Scan(
+			&info.ID, &info.Email, &info.Phone, &info.Location, 
+			&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website, &info.UpdatedAt,
+		)
+	}
+	
+	if err != nil {
+		return model.ContactInfo{}, err
+	}
+	
+	return info, nil
+}
+
+

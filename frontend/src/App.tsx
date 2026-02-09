@@ -13,6 +13,7 @@ import { ManageEducation } from './pages/admin/ManageEducation';
 import { ManageHobbies } from './pages/admin/ManageHobbies';
 import { ManageTestimonials } from './pages/admin/ManageTestimonials';
 import { ManageMessages } from './pages/admin/ManageMessages';
+import { ManageContactInfo } from './pages/admin/ManageContactInfo';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import './i18n';
 
@@ -41,6 +42,7 @@ function App() {
             <Route path="/admin/hobbies" element={<ManageHobbies />} />
             <Route path="/admin/testimonials" element={<ManageTestimonials />} />
             <Route path="/admin/messages" element={<ManageMessages />} />
+            <Route path="/admin/contact-info" element={<ManageContactInfo />} />
           </Route>
         </Route>
       </Routes>

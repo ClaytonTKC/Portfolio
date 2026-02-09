@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const Footer: React.FC = () => {
     const { t } = useTranslation();
     const currentYear = new Date().getFullYear();
+    const [contactInfo, setContactInfo] = React.useState<{ github: string; linkedin: string } | null>(null);
+
+    React.useEffect(() => {
+        const fetchInfo = async () => {
+            try {
+                // Using client directly to avoid circular dependencies if any, 
+                // or just import contentService if available in scope
+                const { contentService } = await import('../../services/content.service');
+                const data = await contentService.getContactInfo();
+                setContactInfo(data);
+            } catch (error) {
+                console.error('Failed to fetch contact info for footer', error);
+            }
+        };
+        fetchInfo();
+    }, []);
 
     const socialLinks = [
-        { name: 'GitHub', icon: 'github', url: '#' },
-        { name: 'LinkedIn', icon: 'linkedin', url: '#' },
-        { name: 'Twitter', icon: 'twitter', url: '#' },
+        { name: 'GitHub', icon: 'github', url: contactInfo?.github || 'https://github.com/' }, // Fallback to generic if empty, or #
+        { name: 'LinkedIn', icon: 'linkedin', url: contactInfo?.linkedin || 'https://linkedin.com/' },
     ];
 
     return (
@@ -47,11 +62,6 @@ export const Footer: React.FC = () => {
                                 {link.icon === 'linkedin' && (
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                                    </svg>
-                                )}
-                                {link.icon === 'twitter' && (
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                                     </svg>
                                 )}
                             </a>

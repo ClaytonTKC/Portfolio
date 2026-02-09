@@ -5,12 +5,26 @@ import { contentService } from '../services/content.service';
 
 export const ContactPage: React.FC = () => {
     const { t } = useTranslation();
+    const [contactInfo, setContactInfo] = useState<{ email: string; location: string } | null>(null);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
         message: '',
     });
     const [submitted, setSubmitted] = useState(false);
+
+    React.useEffect(() => {
+        const fetchInfo = async () => {
+            try {
+                const { contentService } = await import('../services/content.service');
+                const data = await contentService.getContactInfo();
+                setContactInfo(data);
+            } catch (error) {
+                console.error('Failed to fetch contact info', error);
+            }
+        };
+        fetchInfo();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -54,7 +68,7 @@ export const ContactPage: React.FC = () => {
                                 <div>
                                     <p className="font-medium">Email</p>
                                     <p className="text-[var(--color-text-muted)]">
-                                        clay@example.com
+                                        {contactInfo?.email || 'Loading...'}
                                     </p>
                                 </div>
                             </div>
@@ -68,7 +82,7 @@ export const ContactPage: React.FC = () => {
                                 <div>
                                     <p className="font-medium">Location</p>
                                     <p className="text-[var(--color-text-muted)]">
-                                        Montreal, Quebec, Canada
+                                        {contactInfo?.location || 'Loading...'}
                                     </p>
                                 </div>
                             </div>

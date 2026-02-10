@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -599,6 +600,13 @@ func (h *PortfolioHandler) UploadResume(c *gin.Context) {
 		return
 	}
 
+	// Validate file extension
+	ext := filepath.Ext(file.Filename)
+	if strings.ToLower(ext) != ".pdf" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file type. Only PDF files are allowed."})
+		return
+	}
+
 	// Ensure uploads directory exists
 	if _, err := os.Stat("./uploads"); os.IsNotExist(err) {
 		os.Mkdir("./uploads", 0755)
@@ -640,6 +648,68 @@ func (h *PortfolioHandler) GetResume(c *gin.Context) {
 			"pwd":      pwd,
 			"os_err":   err.Error(),
 		})
+		return
+	}
+
+	c.File(targetPath)
+}
+
+func (h *PortfolioHandler) UploadProfilePicture(c *gin.Context) {
+	file, err := c.FormFile("profile_picture")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
+		return
+	}
+
+	// Ensure uploads directory exists
+	uploadDir := "./uploads"
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		os.Mkdir(uploadDir, 0755)
+	}
+
+	// Delete any existing profile pictures to avoid conflicts or stale images
+	extensions := []string{".jpg", ".jpeg", ".png", ".webp"}
+	for _, ext := range extensions {
+		path := filepath.Join(uploadDir, "profile_picture"+ext)
+		if _, err := os.Stat(path); err == nil {
+			os.Remove(path)
+		}
+	}
+
+	// Save as profile.jpg (or original extension, but fixed name for simplicity)
+	// For simplicity, we'll force it to be profile.jpg or keep extension but limit to one active profile pic
+	// Let's stick to a fixed name 'profile_picture.jpg' for now to easily overwrite
+	ext := filepath.Ext(file.Filename)
+	filename := "profile_picture" + ext
+	filepath := filepath.Join(uploadDir, filename)
+
+	if err := c.SaveUploadedFile(file, filepath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Profile picture uploaded successfully", "filename": filename})
+}
+
+func (h *PortfolioHandler) GetProfilePicture(c *gin.Context) {
+	// Try to find profile picture with common extensions
+	uploadDir := "./uploads"
+	extensions := []string{".jpg", ".jpeg", ".png", ".webp"}
+
+	var targetPath string
+	found := false
+
+	for _, ext := range extensions {
+		path := filepath.Join(uploadDir, "profile_picture"+ext)
+		if _, err := os.Stat(path); err == nil {
+			targetPath = path
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Profile picture not found"})
 		return
 	}
 

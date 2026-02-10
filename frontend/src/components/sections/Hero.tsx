@@ -5,6 +5,19 @@ import { Button } from '../ui/Button';
 export const Hero: React.FC = () => {
     const { t, i18n } = useTranslation();
 
+    const [profilePic, setProfilePic] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        // Check if profile picture exists
+        fetch('/api/public/profile-picture')
+            .then(res => {
+                if (res.ok) {
+                    setProfilePic('/api/public/profile-picture');
+                }
+            })
+            .catch(err => console.error('Failed to check profile picture:', err));
+    }, []);
+
     return (
         <section className="section min-h-[calc(100vh-4rem)] flex items-center">
             <div className="container mx-auto px-6">
@@ -68,7 +81,19 @@ export const Hero: React.FC = () => {
                             {/* Avatar container */}
                             <div className="relative w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-[var(--glass-border)]">
                                 <div className="w-full h-full bg-gradient-to-br from-[var(--color-surface)] to-[var(--color-surface-light)] flex items-center justify-center">
-                                    <span className="text-8xl">👨‍💻</span>
+                                    {profilePic ? (
+                                        <img
+                                            src={profilePic}
+                                            alt="Clayton Cheung"
+                                            className="w-full h-full object-cover"
+                                            onError={() => {
+                                                // Fallback to emoji if image fails to load
+                                                setProfilePic(null);
+                                            }}
+                                        />
+                                    ) : (
+                                        <span className="text-8xl">👨‍💻</span>
+                                    )}
                                 </div>
                             </div>
 

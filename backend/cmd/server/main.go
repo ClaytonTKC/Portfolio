@@ -90,6 +90,7 @@ func main() {
 
 			// Download Resume
 			public.GET("/resume", portfolioHandler.GetResume)
+			public.GET("/profile-picture", portfolioHandler.GetProfilePicture)
 		}
 
 		// Admin authentication
@@ -100,11 +101,14 @@ func main() {
 		admin.Use(middleware.AuthMiddleware())
 		{
 			admin.GET("/profile", adminHandler.GetProfile)
+			
+			// Contact Info
 			admin.GET("/contact-info", adminHandler.GetContactInfo)
 			admin.PUT("/contact-info", adminHandler.UpdateContactInfo)
 			
-			// Resume Management
+			// Resume & Profile Picture
 			admin.POST("/resume", portfolioHandler.UploadResume)
+			admin.POST("/profile-picture", portfolioHandler.UploadProfilePicture)
 
 			// Skills management
 			admin.POST("/skills", portfolioHandler.CreateSkill)

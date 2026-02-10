@@ -6,6 +6,7 @@ import { authService } from '../../services/auth.service';
 import { contentService } from '../../services/content.service';
 import { eventBus } from '../../utils/eventBus';
 import { StatusModal } from '../ui/StatusModal';
+import { UploadProfilePicture } from '../admin/UploadProfilePicture';
 
 export const AdminLayout: React.FC = () => {
     const { t } = useTranslation();
@@ -165,6 +166,11 @@ export const AdminLayout: React.FC = () => {
                                 </button>
                             </div>
                         </Card>
+
+                        {/* Profile Picture Upload (Quick Access) */}
+                        <div className="mt-6">
+                            <UploadProfilePicture />
+                        </div>
                     </div>
 
                     {/* Main Content Area */}
@@ -173,6 +179,6 @@ export const AdminLayout: React.FC = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

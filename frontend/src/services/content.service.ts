@@ -122,6 +122,17 @@ export const contentService = {
         return response.data;
     },
 
+    async uploadProfilePicture(file: File): Promise<{ message: string; filename: string }> {
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        const response = await client.post<{ message: string; filename: string }>('/admin/profile-picture', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+
 
     // Projects
     async createProject(project: Project): Promise<Project> {

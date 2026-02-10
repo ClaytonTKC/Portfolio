@@ -104,12 +104,12 @@ export const Hero: React.FC = () => {
                             </div>
 
                             {/* Floating elements */}
-                            <div className="absolute -top-4 -right-4 w-20 h-20 glass-card flex items-center justify-center animate-float" style={{ animationDelay: '0.5s' }}>
+                            {/* <div className="absolute -top-4 -right-4 w-20 h-20 glass-card flex items-center justify-center animate-float" style={{ animationDelay: '0.5s' }}>
                                 <span className="text-3xl">⚛️</span>
                             </div>
                             <div className="absolute -bottom-4 -left-4 w-16 h-16 glass-card flex items-center justify-center animate-float" style={{ animationDelay: '1s' }}>
                                 <span className="text-2xl">🚀</span>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>

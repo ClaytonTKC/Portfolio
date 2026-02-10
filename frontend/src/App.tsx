@@ -29,7 +29,7 @@ function App() {
         </Route>
 
         {/* Admin routes */}
-        <Route path="/admin" element={<AdminLogin />} />
+        <Route path="/login" element={<AdminLogin />} />
 
         {/* Protected Admin Routes */}
         <Route element={<ProtectedRoute />}>

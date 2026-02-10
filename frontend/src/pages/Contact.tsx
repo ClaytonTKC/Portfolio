@@ -66,7 +66,7 @@ export const ContactPage: React.FC = () => {
                                     <span className="text-xl">📧</span>
                                 </div>
                                 <div>
-                                    <p className="font-medium">Email</p>
+                                    <p className="font-medium">{t('contact_info.emailLabel')}</p>
                                     <p className="text-[var(--color-text-muted)]">
                                         {contactInfo?.email || 'Loading...'}
                                     </p>
@@ -80,7 +80,7 @@ export const ContactPage: React.FC = () => {
                                     <span className="text-xl">📍</span>
                                 </div>
                                 <div>
-                                    <p className="font-medium">Location</p>
+                                    <p className="font-medium">{t('contact_info.locationLabel')}</p>
                                     <p className="text-[var(--color-text-muted)]">
                                         {contactInfo?.location || 'Loading...'}
                                     </p>
@@ -94,9 +94,9 @@ export const ContactPage: React.FC = () => {
                                     <span className="text-xl">⏰</span>
                                 </div>
                                 <div>
-                                    <p className="font-medium">Availability</p>
+                                    <p className="font-medium">{t('contact_info.availabilityLabel')}</p>
                                     <p className="text-[var(--color-text-muted)]">
-                                        Mon - Fri, 9:00 AM - 6:00 PM PST
+                                        {t('contact_info.availabilityValue')}
                                     </p>
                                 </div>
                             </div>
@@ -119,7 +119,7 @@ export const ContactPage: React.FC = () => {
                                         onChange={handleChange}
                                         required
                                         className="form-input"
-                                        placeholder="Clay Smith"
+                                        placeholder={t('placeholders.name')}
                                     />
                                 </div>
 
@@ -135,7 +135,7 @@ export const ContactPage: React.FC = () => {
                                         onChange={handleChange}
                                         required
                                         className="form-input"
-                                        placeholder="clay@example.com"
+                                        placeholder={t('placeholders.email')}
                                     />
                                 </div>
 
@@ -151,7 +151,7 @@ export const ContactPage: React.FC = () => {
                                         required
                                         rows={5}
                                         className="form-input resize-none"
-                                        placeholder="Tell me about your project..."
+                                        placeholder={t('placeholders.message')}
                                     />
                                 </div>
 
@@ -165,13 +165,13 @@ export const ContactPage: React.FC = () => {
                             <div className="text-5xl mb-4">✅</div>
                             <h3 className="text-xl font-semibold mb-2">{t('contact.success')}</h3>
                             <p className="text-[var(--color-text-muted)] mb-6">
-                                I'll get back to you as soon as possible.
+                                {t('contact.successDetail')}
                             </p>
                             <Button
                                 variant="secondary"
                                 onClick={() => setSubmitted(false)}
                             >
-                                Send Another Message
+                                {t('contact.sendAnother')}
                             </Button>
                         </div>
                     )}

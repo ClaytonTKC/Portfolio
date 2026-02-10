@@ -35,6 +35,8 @@ services:
       JWT_SECRET: your-super-secret-jwt-key-change-in-production
       ENVIRONMENT: development
       TRUSTED_PROXIES: ""
+      ADMIN_USER: ${ADMIN_USER}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
     ports:
       - "8080:8080"
     volumes:

@@ -51,7 +51,6 @@ export const UploadProfilePicture: React.FC = () => {
                 <div className="flex flex-col gap-3 w-full">
                     <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-[var(--glass-border)] border-dashed rounded-lg cursor-pointer bg-[var(--color-surface)] hover:bg-[var(--color-surface-light)] transition-colors">
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <span className="text-2xl mb-2">☁️</span>
                             <p className="text-sm text-[var(--color-text-muted)]">
                                 {file ? file.name : "Click to upload"}
                             </p>

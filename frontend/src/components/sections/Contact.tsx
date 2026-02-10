@@ -41,7 +41,7 @@ export const Contact: React.FC = () => {
                                     <span className="text-xl">📧</span>
                                 </div>
                                 <div>
-                                    <p className="font-medium">Email</p>
+                                    <p className="font-medium">{t('contact_info.emailLabel')}</p>
                                     <p className="text-[var(--color-text-muted)]">
                                         claudio@portfolio.com
                                     </p>
@@ -55,9 +55,9 @@ export const Contact: React.FC = () => {
                                     <span className="text-xl">📍</span>
                                 </div>
                                 <div>
-                                    <p className="font-medium">Location</p>
+                                    <p className="font-medium">{t('contact_info.locationLabel')}</p>
                                     <p className="text-[var(--color-text-muted)]">
-                                        Montreal, Quebec, Canada
+                                        {t('contact_info.locationValue')}
                                     </p>
                                 </div>
                             </div>
@@ -69,9 +69,9 @@ export const Contact: React.FC = () => {
                                     <span className="text-xl">⏰</span>
                                 </div>
                                 <div>
-                                    <p className="font-medium">Availability</p>
+                                    <p className="font-medium">{t('contact_info.availabilityLabel')}</p>
                                     <p className="text-[var(--color-text-muted)]">
-                                        Mon - Fri, 9:00 AM - 6:00 PM PST
+                                        {t('contact_info.availabilityValue')}
                                     </p>
                                 </div>
                             </div>
@@ -96,7 +96,7 @@ export const Contact: React.FC = () => {
                                     onChange={handleChange}
                                     required
                                     className="form-input"
-                                    placeholder="Clayton Cheung"
+                                    placeholder={t('placeholders.name')}
                                 />
                             </div>
 
@@ -115,7 +115,7 @@ export const Contact: React.FC = () => {
                                     onChange={handleChange}
                                     required
                                     className="form-input"
-                                    placeholder="Clay@example.com"
+                                    placeholder={t('placeholders.email')}
                                 />
                             </div>
 
@@ -134,7 +134,7 @@ export const Contact: React.FC = () => {
                                     required
                                     rows={5}
                                     className="form-input resize-none"
-                                    placeholder="Tell me about your project..."
+                                    placeholder={t('placeholders.message')}
                                 />
                             </div>
 

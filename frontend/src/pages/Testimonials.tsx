@@ -224,7 +224,7 @@ export const TestimonialsPage: React.FC = () => {
                                         onChange={handleChange}
                                         required
                                         className="form-input"
-                                        placeholder="Clay Smith"
+                                        placeholder={t('placeholders.name')}
                                     />
                                 </div>
 
@@ -238,7 +238,7 @@ export const TestimonialsPage: React.FC = () => {
                                         value={formData.role}
                                         onChange={handleChange}
                                         className="form-input"
-                                        placeholder="CEO, Example Corp"
+                                        placeholder={t('placeholders.role')}
                                     />
                                 </div>
 
@@ -274,7 +274,7 @@ export const TestimonialsPage: React.FC = () => {
                                         required
                                         rows={4}
                                         className="form-input resize-none"
-                                        placeholder="Share your experience..."
+                                        placeholder={t('placeholders.testimonial')}
                                     />
                                 </div>
 
@@ -287,7 +287,7 @@ export const TestimonialsPage: React.FC = () => {
                                         variant="secondary"
                                         onClick={() => setShowForm(false)}
                                     >
-                                        Cancel
+                                        {t('common.cancel')}
                                     </Button>
                                 </div>
                             </form>

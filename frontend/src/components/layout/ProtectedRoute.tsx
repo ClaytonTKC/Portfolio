@@ -6,7 +6,7 @@ export const ProtectedRoute: React.FC = () => {
     const isAuthenticated = authService.isAuthenticated();
 
     if (!isAuthenticated) {
-        return <Navigate to="/admin" replace />;
+        return <Navigate to="/login" replace />;
     }
 
     return <Outlet />;

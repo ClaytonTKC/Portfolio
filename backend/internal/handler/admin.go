@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/portfolio/backend/internal/middleware"
@@ -25,9 +26,11 @@ func (h *AdminHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// Placeholder - would verify credentials against database
-	// For now, using placeholder credentials
-	if req.Email == "admin@portfolio.com" && req.Password == "admin123" {
+	// Verify credentials against environment variables
+	adminUser := os.Getenv("ADMIN_USER")
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
+
+	if req.Email == adminUser && req.Password == adminPassword {
 		user := &model.Admin{
 			ID:    "admin-1",
 			Email: req.Email,

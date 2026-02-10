@@ -60,6 +60,8 @@
     "message": "Your Message",
     "send": "Send Message",
     "success": "Message sent successfully!",
+    "successDetail": "I'll get back to you as soon as possible.",
+    "sendAnother": "Send Another Message",
     "error": "Failed to send message. Please try again."
   },
   "admin": {
@@ -74,5 +76,23 @@
   "footer": {
     "rights": "All rights reserved",
     "builtWith": "Built with"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "contact_info": {
+    "emailLabel": "Email",
+    "locationLabel": "Location",
+    "availabilityLabel": "Availability",
+    "availabilityValue": "Mon - Fri, 9:00 AM - 6:00 PM PST",
+    "locationValue": "Montreal, Quebec, Canada"
+  },
+  "placeholders": {
+    "name": "Jean Dupont",
+    "email": "Clay@example.com",
+    "message": "Tell me about your project...",
+    "role": "CEO, Example Corp",
+    "testimonial": "Share your experience..."
   }
 }

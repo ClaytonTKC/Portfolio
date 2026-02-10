@@ -19,7 +19,7 @@ export const Button: React.FC<ButtonProps> = ({
 
     const variants = {
         primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary)]/90 focus:ring-[var(--color-primary)]',
-        secondary: 'bg-[var(--color-secondary)] text-white hover:bg-[var(--color-secondary)]/90 focus:ring-[var(--color-secondary)]',
+        secondary: 'bg-transparent text-[var(--color-text)] border border-[var(--glass-border)] hover:bg-[var(--glass-bg)] hover:border-[var(--color-primary)] focus:ring-[var(--color-primary)] backdrop-blur-md',
         outline: 'border-2 border-[var(--color-primary)] text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 focus:ring-[var(--color-primary)]',
         ghost: 'text-[var(--color-text)] hover:bg-[var(--color-surface)] focus:ring-[var(--color-text)]',
     };

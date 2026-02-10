@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/Button';
 
 export const Hero: React.FC = () => {
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
 
     const [profilePic, setProfilePic] = React.useState<string | null>(null);
 
@@ -17,6 +19,10 @@ export const Hero: React.FC = () => {
             })
             .catch(err => console.error('Failed to check profile picture:', err));
     }, []);
+
+    const scrollToProjects = () => {
+        document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+    };
 
     return (
         <section className="section min-h-[calc(100vh-4rem)] flex items-center">
@@ -37,10 +43,10 @@ export const Hero: React.FC = () => {
                             {t('hero.subtitle')}
                         </p>
                         <div className="flex flex-wrap gap-4">
-                            <Button variant="primary">
+                            <Button variant="primary" onClick={scrollToProjects}>
                                 {t('hero.cta')}
                             </Button>
-                            <Button variant="secondary">
+                            <Button variant="secondary" onClick={() => navigate('/contact')}>
                                 {t('hero.contact')}
                             </Button>
                             <a

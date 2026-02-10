@@ -5,11 +5,12 @@ import { Button } from '../components/ui/Button';
 import { ConfirmationModal } from '../components/ui/ConfirmationModal';
 import { AddProjectModal } from '../components/admin/AddProjectModal';
 import { AddSkillModal } from '../components/admin/AddSkillModal';
+import { UploadResumeModal } from '../components/admin/UploadResumeModal';
 import { contentService, type Testimonial, type Message } from '../services/content.service';
 
 export const AdminDashboard: React.FC = () => {
     const navigate = useNavigate();
-    const [activeModal, setActiveModal] = useState<'project' | 'skill' | null>(null);
+    const [activeModal, setActiveModal] = useState<'project' | 'skill' | 'resume' | null>(null);
     const [pendingTestimonials, setPendingTestimonials] = useState<Testimonial[]>([]);
     const [recentMessages, setRecentMessages] = useState<Message[]>([]);
 
@@ -99,7 +100,12 @@ export const AdminDashboard: React.FC = () => {
                     >
                         Add Skill
                     </Button>
-                    <Button variant="secondary">Update Resume</Button>
+                    <Button
+                        variant="secondary"
+                        onClick={() => setActiveModal('resume')}
+                    >
+                        Update Resume
+                    </Button>
                     <Button variant="secondary" onClick={() => navigate('/admin/contact-info')}>Edit Contact Info</Button>
                 </div>
             </Card>
@@ -181,6 +187,10 @@ export const AdminDashboard: React.FC = () => {
             />
             <AddSkillModal
                 isOpen={activeModal === 'skill'}
+                onClose={() => setActiveModal(null)}
+            />
+            <UploadResumeModal
+                isOpen={activeModal === 'resume'}
                 onClose={() => setActiveModal(null)}
             />
 

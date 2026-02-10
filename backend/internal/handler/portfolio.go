@@ -3,6 +3,8 @@ package handler
 import (
 	"context"
 	"net/http"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -581,4 +583,65 @@ func (h *PortfolioHandler) GetContactInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, info)
+}
+
+// Resume Handlers
+func (h *PortfolioHandler) UploadResume(c *gin.Context) {
+	lang := c.Query("lang")
+	if lang != "en" && lang != "fr" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid language. Must be 'en' or 'fr'"})
+		return
+	}
+
+	file, err := c.FormFile("resume")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
+		return
+	}
+
+	// Ensure uploads directory exists
+	if _, err := os.Stat("./uploads"); os.IsNotExist(err) {
+		os.Mkdir("./uploads", 0755)
+	}
+
+	filename := "resume_" + lang + ".pdf"
+	filepath := "./uploads/" + filename
+
+	if err := c.SaveUploadedFile(file, filepath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Resume uploaded successfully", "lang": lang})
+}
+
+func (h *PortfolioHandler) GetResume(c *gin.Context) {
+	lang := c.Query("lang")
+	if lang == "" {
+		lang = "en" // Default to English
+	}
+	
+	if lang != "en" && lang != "fr" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid language. Must be 'en' or 'fr'"})
+		return
+	}
+
+	filename := "resume_" + lang + ".pdf"
+	targetPath := "./uploads/" + filename
+
+	// Check if file exists
+	if _, err := os.Stat(targetPath); os.IsNotExist(err) {
+		pwd, _ := os.Getwd()
+		absPath, _ := filepath.Abs(targetPath)
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":    "Resume not found",
+			"rel_path": targetPath,
+			"abs_path": absPath,
+			"pwd":      pwd,
+			"os_err":   err.Error(),
+		})
+		return
+	}
+
+	c.File(targetPath)
 }

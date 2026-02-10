@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '../ui/Button';
 
 export const Hero: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     return (
         <section className="section min-h-[calc(100vh-4rem)] flex items-center">
@@ -31,8 +31,8 @@ export const Hero: React.FC = () => {
                                 {t('hero.contact')}
                             </Button>
                             <a
-                                href="/CV.pdf"
-                                download="Clayton_Cheung_CV.pdf"
+                                href={`/api/public/resume?lang=${i18n.language?.startsWith('fr') ? 'fr' : 'en'}`}
+                                download
                                 className="btn-secondary flex items-center"
                                 target="_blank"
                                 rel="noopener noreferrer"

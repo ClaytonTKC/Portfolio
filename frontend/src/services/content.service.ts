@@ -111,6 +111,18 @@ export const contentService = {
         return response.data;
     },
 
+    async uploadResume(file: File, lang: 'en' | 'fr'): Promise<{ message: string; lang: string }> {
+        const formData = new FormData();
+        formData.append('resume', file);
+        const response = await client.post<{ message: string; lang: string }>(`/admin/resume?lang=${lang}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+
+
     // Projects
     async createProject(project: Project): Promise<Project> {
         const response = await client.post<Project>('/admin/projects', project);

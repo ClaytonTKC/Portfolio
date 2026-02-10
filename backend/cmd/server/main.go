@@ -87,6 +87,9 @@ func main() {
 
 			// Get contact info
 			public.GET("/contact-info", portfolioHandler.GetContactInfo)
+
+			// Download Resume
+			public.GET("/resume", portfolioHandler.GetResume)
 		}
 
 		// Admin authentication
@@ -99,6 +102,9 @@ func main() {
 			admin.GET("/profile", adminHandler.GetProfile)
 			admin.GET("/contact-info", adminHandler.GetContactInfo)
 			admin.PUT("/contact-info", adminHandler.UpdateContactInfo)
+			
+			// Resume Management
+			admin.POST("/resume", portfolioHandler.UploadResume)
 
 			// Skills management
 			admin.POST("/skills", portfolioHandler.CreateSkill)

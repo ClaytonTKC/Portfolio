@@ -51,8 +51,17 @@ func main() {
 	middleware.InitAuth(cfg)
 
 	// Configure CORS
+	allowedOrigins := []string{"http://localhost:5173", "http://localhost:3000"}
+	if len(cfg.AllowedOrigins) > 0 {
+		for _, origin := range cfg.AllowedOrigins {
+			if origin != "" {
+				allowedOrigins = append(allowedOrigins, origin)
+			}
+		}
+	}
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://localhost:3000"},
+		AllowOrigins:     allowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

@@ -2,14 +2,16 @@ package config
 
 import (
 	"os"
+	"strings"
 )
 
 type Config struct {
-	DatabaseURL string
-	Port        string
-	JWTSecret   string
+	DatabaseURL    string
+	Port           string
+	JWTSecret      string
 	Environment    string
 	TrustedProxies string
+	AllowedOrigins []string
 }
 
 func Load() *Config {
@@ -19,6 +21,7 @@ func Load() *Config {
 		JWTSecret:      getEnv("JWT_SECRET", "your-secret-key"),
 		Environment:    getEnv("ENVIRONMENT", "development"),
 		TrustedProxies: getEnv("TRUSTED_PROXIES", ""),
+		AllowedOrigins: strings.Split(getEnv("ALLOWED_ORIGINS", ""), ","),
 	}
 }
 

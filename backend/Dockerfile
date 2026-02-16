@@ -18,20 +18,6 @@ COPY . .
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/server
 
-# Production stage
-FROM alpine:latest AS production
-
-RUN apk --no-cache add ca-certificates
-
-WORKDIR /app
-
-# Copy binary from builder
-COPY --from=builder /app/server .
-
-EXPOSE 8080
-
-CMD ["./server"]
-
 # Development stage
 FROM golang:1.23-alpine AS development
 
@@ -47,3 +33,18 @@ EXPOSE 8080
 
 # Use a shell script to handle dependencies at runtime due to volume mount
 CMD sh -c "go mod tidy && go run ./cmd/server"
+
+# Production stage
+FROM alpine:latest AS production
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /app
+
+# Copy binary from builder
+COPY --from=builder /app/server .
+COPY --from=builder /app/uploads ./uploads
+
+EXPOSE 8080
+
+CMD ["./server"]

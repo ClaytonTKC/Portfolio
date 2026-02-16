@@ -34,7 +34,33 @@ export const Projects: React.FC = () => {
         fetchProjects();
     }, []);
 
-    // ... (rendering states)
+    if (loading) {
+        return (
+            <section className="section bg-[var(--color-surface)]/30" id="projects">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="section-title">{t('projects.title')}</h2>
+                        <p className="section-subtitle">{t('projects.subtitle')}</p>
+                    </div>
+                    <p className="text-center text-[var(--color-text-muted)]">Loading projects...</p>
+                </div>
+            </section>
+        );
+    }
+
+    if (error) {
+        return (
+            <section className="section bg-[var(--color-surface)]/30" id="projects">
+                <div className="container mx-auto px-6">
+                    <div className="text-center mb-16">
+                        <h2 className="section-title">{t('projects.title')}</h2>
+                        <p className="section-subtitle">{t('projects.subtitle')}</p>
+                    </div>
+                    <p className="text-center text-red-500">{error}</p>
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="section bg-[var(--color-surface)]/30" id="projects">

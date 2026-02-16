@@ -51,13 +51,10 @@ func main() {
 	middleware.InitAuth(cfg)
 
 	// Configure CORS
-	allowedOrigins := []string{"http://localhost:5173", "http://localhost:3000"}
-	if len(cfg.AllowedOrigins) > 0 {
-		for _, origin := range cfg.AllowedOrigins {
-			if origin != "" {
-				allowedOrigins = append(allowedOrigins, origin)
-			}
-		}
+	allowedOrigins := cfg.AllowedOrigins
+	if len(allowedOrigins) == 0 {
+		allowedOrigins = []string{"http://localhost:5173", "http://localhost:3000"}
+		log.Println("ALLOWED_ORIGINS/FRONTEND_URL not set; using localhost defaults for CORS")
 	}
 
 	r.Use(cors.New(cors.Config{

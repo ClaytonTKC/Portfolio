@@ -1,9 +1,26 @@
 import axios from 'axios';
 import { eventBus } from '../utils/eventBus';
 
+const FALLBACK_API_URL = 'http://localhost:8080/api';
+
+const normalizeApiBaseUrl = (value: string | undefined): string => {
+    const trimmed = value?.trim();
+    if (!trimmed) {
+        return FALLBACK_API_URL;
+    }
+
+    const withProtocol =
+        /^https?:\/\//i.test(trimmed) || trimmed.startsWith('/')
+            ? trimmed
+            : `https://${trimmed}`;
+
+    const noTrailingSlash = withProtocol.replace(/\/+$/, '');
+    return noTrailingSlash.endsWith('/api') ? noTrailingSlash : `${noTrailingSlash}/api`;
+};
+
 // Create axios instance with base URL from environment variables
 const client = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
+    baseURL: normalizeApiBaseUrl(import.meta.env.VITE_API_URL),
     headers: {
         'Content-Type': 'application/json',
     },

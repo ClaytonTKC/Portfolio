@@ -48,9 +48,10 @@ export const TestimonialsPage: React.FC = () => {
         const fetchTestimonials = async () => {
             try {
                 const data = await contentService.getApprovedTestimonials();
-                setTestimonials(data);
+                setTestimonials(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error('Failed to fetch testimonials:', error);
+                setTestimonials([]);
             } finally {
                 setIsLoading(false);
             }

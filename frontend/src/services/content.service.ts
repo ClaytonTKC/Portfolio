@@ -249,12 +249,13 @@ export const contentService = {
     // Testimonials
     async getPendingTestimonials(): Promise<Testimonial[]> {
         const response = await client.get<Testimonial[]>('/admin/testimonials');
-        return response.data.filter(t => t.status === 'pending');
+        const testimonials = response.data || [];
+        return testimonials.filter(t => t.status === 'pending');
     },
 
     async getAllTestimonials(): Promise<Testimonial[]> {
         const response = await client.get<Testimonial[]>('/admin/testimonials');
-        return response.data;
+        return response.data || [];
     },
 
     async approveTestimonial(id: string): Promise<void> {
@@ -276,7 +277,7 @@ export const contentService = {
 
     async getApprovedTestimonials(): Promise<Testimonial[]> {
         const response = await client.get<Testimonial[]>('/public/testimonials');
-        return response.data;
+        return response.data || [];
     },
 
     // Messages

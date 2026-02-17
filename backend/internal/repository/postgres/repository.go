@@ -308,7 +308,7 @@ func (r *Repository) GetApprovedTestimonials(ctx context.Context) ([]model.Testi
 	}
 	defer rows.Close()
 
-	var testimonials []model.Testimonial
+	testimonials := []model.Testimonial{}
 	for rows.Next() {
 		var t model.Testimonial
 		if err := rows.Scan(&t.ID, &t.AuthorName, &t.AuthorRole, &t.Content, &t.Rating, &t.Status); err != nil {

@@ -2,9 +2,11 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/portfolio/backend/internal/model"
 )
@@ -29,6 +31,11 @@ func NewConnection(databaseURL string) (*pgxpool.Pool, error) {
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
+	// Keep production databases aligned with expected schema.
+	if err := ensureSchema(pool); err != nil {
+		return nil, fmt.Errorf("failed to ensure database schema: %w", err)
+	}
+
 	return pool, nil
 }
 
@@ -39,7 +46,7 @@ func NewRepository(db *pgxpool.Pool) *Repository {
 // === Skills ===
 
 func (r *Repository) GetSkills(ctx context.Context) ([]model.Skill, error) {
-	query := `SELECT id, name, COALESCE(icon, ''), proficiency, COALESCE(category, ''), sort_order, show_in_portfolio FROM skills ORDER BY sort_order ASC`
+	query := `SELECT id, name, COALESCE(icon, ''), proficiency, COALESCE(category, ''), sort_order, COALESCE(show_in_portfolio, TRUE) FROM skills ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -87,7 +94,7 @@ func (r *Repository) DeleteSkill(ctx context.Context, id string) error {
 // === Projects ===
 
 func (r *Repository) GetProjects(ctx context.Context) ([]model.Project, error) {
-	query := `SELECT id, title, COALESCE(title_fr, ''), COALESCE(description, ''), COALESCE(description_fr, ''), COALESCE(image_url, ''), COALESCE(live_url, ''), COALESCE(code_url, ''), tags, featured, sort_order FROM projects ORDER BY sort_order ASC`
+	query := `SELECT id, title, COALESCE(title_fr, ''), COALESCE(description, ''), COALESCE(description_fr, ''), COALESCE(image_url, ''), COALESCE(live_url, ''), COALESCE(code_url, ''), COALESCE(tags, '{}'::text[]), featured, sort_order FROM projects ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -135,7 +142,7 @@ func (r *Repository) DeleteProject(ctx context.Context, id string) error {
 // === Experience ===
 
 func (r *Repository) GetExperiences(ctx context.Context) ([]model.Experience, error) {
-	query := `SELECT id, title, COALESCE(title_fr, ''), company, COALESCE(company_fr, ''), location, COALESCE(location_fr, ''), start_date, end_date, is_current, description, COALESCE(description_fr, '{}'), sort_order FROM experiences ORDER BY sort_order ASC`
+	query := `SELECT id, title, COALESCE(title_fr, ''), company, COALESCE(company_fr, ''), COALESCE(location, ''), COALESCE(location_fr, ''), start_date, end_date, is_current, COALESCE(description, '{}'::text[]), COALESCE(description_fr, '{}'::text[]), sort_order FROM experiences ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -191,7 +198,7 @@ func (r *Repository) DeleteExperience(ctx context.Context, id string) error {
 // === Education ===
 
 func (r *Repository) GetEducation(ctx context.Context) ([]model.Education, error) {
-	query := `SELECT id, degree, COALESCE(degree_fr, ''), school, COALESCE(school_fr, ''), location, COALESCE(location_fr, ''), start_date, end_date, description, COALESCE(description_fr, ''), sort_order FROM education ORDER BY sort_order ASC`
+	query := `SELECT id, degree, COALESCE(degree_fr, ''), school, COALESCE(school_fr, ''), COALESCE(location, ''), COALESCE(location_fr, ''), start_date, end_date, COALESCE(description, ''), COALESCE(description_fr, ''), sort_order FROM education ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -246,7 +253,7 @@ func (r *Repository) DeleteEducation(ctx context.Context, id string) error {
 // === Hobbies ===
 
 func (r *Repository) GetHobbies(ctx context.Context) ([]model.Hobby, error) {
-	query := `SELECT id, name, icon, description, sort_order FROM hobbies ORDER BY sort_order ASC`
+	query := `SELECT id, name, COALESCE(icon, ''), COALESCE(description, ''), sort_order FROM hobbies ORDER BY sort_order ASC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -294,7 +301,7 @@ func (r *Repository) DeleteHobby(ctx context.Context, id string) error {
 // === Testimonials ===
 
 func (r *Repository) GetApprovedTestimonials(ctx context.Context) ([]model.Testimonial, error) {
-	query := `SELECT id, author_name, author_role, content, rating, status FROM testimonials WHERE status = 'approved' ORDER BY created_at DESC`
+	query := `SELECT id, author_name, COALESCE(author_role, ''), content, rating, status FROM testimonials WHERE status = 'approved' ORDER BY created_at DESC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -313,7 +320,7 @@ func (r *Repository) GetApprovedTestimonials(ctx context.Context) ([]model.Testi
 }
 
 func (r *Repository) GetAllTestimonials(ctx context.Context) ([]model.Testimonial, error) {
-	query := `SELECT id, author_name, author_role, author_email, content, rating, status, created_at, updated_at FROM testimonials ORDER BY created_at DESC`
+	query := `SELECT id, author_name, COALESCE(author_role, ''), COALESCE(author_email, ''), content, rating, status, created_at, updated_at FROM testimonials ORDER BY created_at DESC`
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -408,8 +415,8 @@ func (r *Repository) GetContactInfo(ctx context.Context) (model.ContactInfo, err
 	)
 	
 	if err != nil {
-		// If no row exists, return empty structure or create default
-		if err.Error() == "no rows in result set" {
+		// If no row exists, return empty structure.
+		if errors.Is(err, pgx.ErrNoRows) {
 			return model.ContactInfo{}, nil
 		}
 		return model.ContactInfo{}, err
@@ -454,5 +461,4 @@ func (r *Repository) UpdateContactInfo(ctx context.Context, info model.ContactIn
 	
 	return info, nil
 }
-
 

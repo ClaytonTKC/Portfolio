@@ -383,12 +383,36 @@ func (r *Repository) GetMessages(ctx context.Context) ([]model.Message, error) {
 
 func (r *Repository) CreateMessage(ctx context.Context, m model.Message) (model.Message, error) {
 	query := `
-		INSERT INTO messages (name, email, subject, content, is_read)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO messages (name, email, subject, content, content_hash, is_read)
+		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id, created_at
 	`
-	err := r.db.QueryRow(ctx, query, m.Name, m.Email, m.Subject, m.Content, m.Read).Scan(&m.ID, &m.CreatedAt)
+	err := r.db.QueryRow(ctx, query, m.Name, m.Email, m.Subject, m.Content, m.ContentHash, m.Read).Scan(&m.ID, &m.CreatedAt)
 	return m, err
+}
+
+func (r *Repository) HasRecentDuplicateMessage(ctx context.Context, email, contentHash string, within time.Duration) (bool, error) {
+	if within <= 0 {
+		within = 24 * time.Hour
+	}
+
+	query := `
+		SELECT EXISTS(
+			SELECT 1
+			FROM messages
+			WHERE email = $1
+			  AND content_hash = $2
+			  AND created_at >= $3
+		)
+	`
+
+	cutoff := time.Now().UTC().Add(-within)
+	var exists bool
+	if err := r.db.QueryRow(ctx, query, email, contentHash, cutoff).Scan(&exists); err != nil {
+		return false, err
+	}
+
+	return exists, nil
 }
 
 func (r *Repository) MarkMessageRead(ctx context.Context, id string) error {
@@ -461,4 +485,3 @@ func (r *Repository) UpdateContactInfo(ctx context.Context, info model.ContactIn
 	
 	return info, nil
 }
-

@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS messages (
     email VARCHAR(255) NOT NULL,
     subject VARCHAR(255) DEFAULT '',
     content TEXT NOT NULL,
+    content_hash VARCHAR(64) DEFAULT '',
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -136,6 +137,7 @@ CREATE INDEX idx_hobbies_sort_order ON hobbies(sort_order);
 CREATE INDEX idx_testimonials_status ON testimonials(status);
 CREATE INDEX idx_messages_is_read ON messages(is_read);
 CREATE INDEX idx_messages_created_at ON messages(created_at DESC);
+CREATE INDEX idx_messages_email_hash_created_at ON messages(email, content_hash, created_at DESC);
 
 -- Updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -201,6 +203,7 @@ ON CONFLICT DO NOTHING;
 -- Migration: 002_add_subject.sql
 -- Add subject to messages table
 ALTER TABLE messages ADD COLUMN IF NOT EXISTS subject VARCHAR(255) DEFAULT '';
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS content_hash VARCHAR(64) DEFAULT '';
 
 -- Migration: 003_seed_testimonials.sql
 -- Seed testimonials

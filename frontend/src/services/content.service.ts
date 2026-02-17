@@ -87,6 +87,16 @@ export interface Message {
     createdAt?: string;
 }
 
+export interface CreateMessagePayload {
+    name: string;
+    email: string;
+    subject: string;
+    content: string;
+    website?: string;
+    submittedAtMs: number;
+    turnstileToken?: string;
+}
+
 
 export interface ContactInfo {
     id: string;
@@ -280,7 +290,7 @@ export const contentService = {
         return response.data;
     },
 
-    async createMessage(message: Partial<Message>): Promise<Message> {
+    async createMessage(message: CreateMessagePayload): Promise<Message> {
         const response = await client.post<Message>('/public/contact', message);
         return response.data;
     },

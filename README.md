@@ -159,11 +159,18 @@ Portfolio/
 | `DATABASE_URL` | PostgreSQL connection string | - |
 | `JWT_SECRET` | JWT signing secret | - |
 | `ENVIRONMENT` | Environment mode | `development` |
+| `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile secret key for contact form CAPTCHA | unset (CAPTCHA disabled) |
+| `CONTACT_RATE_LIMIT_WINDOW_MINUTES` | Contact rate-limit rolling window in minutes | `10` |
+| `CONTACT_RATE_LIMIT_MAX_PER_WINDOW` | Max contact submissions per IP in window | `3` |
+| `CONTACT_RATE_LIMIT_MAX_PER_DAY` | Max contact submissions per IP per day | `20` |
+| `CONTACT_MIN_SUBMIT_SECONDS` | Minimum form-fill time required before submit | `3` |
+| `CONTACT_DUPLICATE_WINDOW_HOURS` | Duplicate message block window (same email + content hash) | `24` |
 
 ### Frontend
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `VITE_API_URL` | Backend API URL (include `/api`) | `http://localhost:8080/api` |
+| `VITE_TURNSTILE_SITE_KEY` | Cloudflare Turnstile site key for contact form CAPTCHA | unset (widget hidden) |
 
 ## Production Deployment
 

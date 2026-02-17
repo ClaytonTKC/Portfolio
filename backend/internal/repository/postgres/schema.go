@@ -119,6 +119,7 @@ func ensureSchema(pool *pgxpool.Pool) error {
 			email VARCHAR(255) NOT NULL,
 			subject VARCHAR(255) DEFAULT '',
 			content TEXT NOT NULL,
+			content_hash VARCHAR(64) NOT NULL DEFAULT '',
 			is_read BOOLEAN DEFAULT FALSE,
 			created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 		);`,
@@ -136,6 +137,7 @@ func ensureSchema(pool *pgxpool.Pool) error {
 		`ALTER TABLE education ADD COLUMN IF NOT EXISTS location_fr VARCHAR(255) DEFAULT '';`,
 		`ALTER TABLE education ADD COLUMN IF NOT EXISTS description_fr TEXT DEFAULT '';`,
 		`ALTER TABLE messages ADD COLUMN IF NOT EXISTS subject VARCHAR(255) DEFAULT '';`,
+		`ALTER TABLE messages ADD COLUMN IF NOT EXISTS content_hash VARCHAR(64) DEFAULT '';`,
 
 		`CREATE INDEX IF NOT EXISTS idx_skills_sort_order ON skills(sort_order);`,
 		`CREATE INDEX IF NOT EXISTS idx_projects_sort_order ON projects(sort_order);`,
@@ -145,6 +147,7 @@ func ensureSchema(pool *pgxpool.Pool) error {
 		`CREATE INDEX IF NOT EXISTS idx_hobbies_sort_order ON hobbies(sort_order);`,
 		`CREATE INDEX IF NOT EXISTS idx_testimonials_status ON testimonials(status);`,
 		`CREATE INDEX IF NOT EXISTS idx_messages_is_read ON messages(is_read);`,
+		`CREATE INDEX IF NOT EXISTS idx_messages_email_hash_created_at ON messages(email, content_hash, created_at DESC);`,
 	}
 
 	for i, statement := range statements {

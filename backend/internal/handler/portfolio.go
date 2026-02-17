@@ -9,16 +9,21 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/portfolio/backend/internal/config"
 	"github.com/portfolio/backend/internal/model"
 	"github.com/portfolio/backend/internal/repository/postgres"
 )
 
 type PortfolioHandler struct {
-	repo *postgres.Repository
+	repo              *postgres.Repository
+	messageProtection *MessageProtection
 }
 
-func NewPortfolioHandler(repo *postgres.Repository) *PortfolioHandler {
-	return &PortfolioHandler{repo: repo}
+func NewPortfolioHandler(repo *postgres.Repository, cfg *config.Config) *PortfolioHandler {
+	return &PortfolioHandler{
+		repo:              repo,
+		messageProtection: NewMessageProtection(cfg),
+	}
 }
 
 // Get full portfolio data for public display
@@ -532,13 +537,55 @@ func (h *PortfolioHandler) SubmitMessage(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
+	if h.messageProtection.IsHoneypotTriggered(req.Website) {
+		c.JSON(http.StatusAccepted, gin.H{"message": "Message received"})
+		return
+	}
+
+	now := time.Now().UTC()
+	if !h.messageProtection.Allow(c.ClientIP(), now) {
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "Too many contact attempts. Please try again later."})
+		return
+	}
+
+	if h.messageProtection.IsSubmissionTooFast(req.SubmittedAtMs, now) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please wait a moment before submitting the form."})
+		return
+	}
+
+	if err := h.messageProtection.VerifyTurnstile(c.Request.Context(), req.TurnstileToken, c.ClientIP()); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Captcha verification failed."})
+		return
+	}
+
+	normalizedEmail := strings.ToLower(strings.TrimSpace(req.Email))
+	normalizedSubject := strings.TrimSpace(req.Subject)
+	normalizedContent := strings.TrimSpace(req.Content)
+	contentHash := BuildMessageContentHash(normalizedEmail, normalizedSubject, normalizedContent)
+
+	isDuplicate, err := h.repo.HasRecentDuplicateMessage(
+		c.Request.Context(),
+		normalizedEmail,
+		contentHash,
+		h.messageProtection.DuplicateWindow(),
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate duplicate message"})
+		return
+	}
+	if isDuplicate {
+		c.JSON(http.StatusAccepted, gin.H{"message": "Message already received"})
+		return
+	}
+
 	msg := model.Message{
-		Name:    req.Name,
-		Email:   req.Email,
-		Subject: req.Subject,
-		Content: req.Content,
-		Read:    false,
+		Name:        strings.TrimSpace(req.Name),
+		Email:       normalizedEmail,
+		Subject:     normalizedSubject,
+		Content:     normalizedContent,
+		ContentHash: contentHash,
+		Read:        false,
 	}
 
 	createdMsg, err := h.repo.CreateMessage(c.Request.Context(), msg)

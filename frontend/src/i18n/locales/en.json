@@ -41,6 +41,7 @@
   "testimonials": {
     "title": "Testimonials",
     "subtitle": "What people say about working with me",
+    "empty": "No approved testimonials yet. Be the first to submit one.",
     "submit": "Submit a Testimonial",
     "form": {
       "name": "Your Name",

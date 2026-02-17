@@ -4,32 +4,6 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { contentService, type Testimonial } from '../services/content.service';
 
-// Placeholder approved testimonials (fallback)
-const approvedTestimonials: Partial<Testimonial>[] = [
-    {
-        id: '1',
-        authorName: 'Sarah Johnson',
-        authorRole: 'CTO, Tech Startup',
-        content: 'Working with Clay was an absolute pleasure. His technical expertise and problem-solving skills are outstanding. He delivered our project ahead of schedule and exceeded all expectations.',
-        rating: 5,
-    },
-    {
-        id: '2',
-        authorName: 'Michael Chen',
-        authorRole: 'Product Manager, Enterprise Co.',
-        content: 'Clay\'s ability to translate complex requirements into elegant solutions is remarkable. He\'s not just a developer, but a true partner who cares about the success of the project.',
-        rating: 5,
-    },
-    {
-        id: '3',
-        authorName: 'Emily Rodriguez',
-        authorRole: 'Founder, Design Agency',
-        content: 'Exceptional work! Clay brought our vision to life with beautiful, performant code. His attention to detail and user experience sensibility made all the difference.',
-        rating: 5,
-    },
-];
-
-
 export const TestimonialsPage: React.FC = () => {
     const { t } = useTranslation();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -83,8 +57,7 @@ export const TestimonialsPage: React.FC = () => {
         }
     };
 
-    // Use placeholder data if API returns empty and not loading
-    const displayTestimonials = (!isLoading && testimonials.length > 0) ? testimonials : approvedTestimonials;
+    const displayTestimonials = testimonials;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -120,60 +93,74 @@ export const TestimonialsPage: React.FC = () => {
 
                 {/* Testimonials Carousel */}
                 <div className="relative group mb-16">
-                    {/* Navigation Buttons */}
-                    <button
-                        onClick={() => scroll('left')}
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 rounded-full bg-[var(--color-surface)] border border-[var(--glass-border)] flex items-center justify-center text-[var(--color-text)] shadow-lg hover:bg-[var(--color-primary)] hover:text-white transition-all opacity-100"
-                        aria-label="Previous testimonial"
-                    >
-                        ←
-                    </button>
-                    <button
-                        onClick={() => scroll('right')}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 rounded-full bg-[var(--color-surface)] border border-[var(--glass-border)] flex items-center justify-center text-[var(--color-text)] shadow-lg hover:bg-[var(--color-primary)] hover:text-white transition-all opacity-100"
-                        aria-label="Next testimonial"
-                    >
-                        →
-                    </button>
+                    {displayTestimonials.length > 1 && (
+                        <>
+                            {/* Navigation Buttons */}
+                            <button
+                                onClick={() => scroll('left')}
+                                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 rounded-full bg-[var(--color-surface)] border border-[var(--glass-border)] flex items-center justify-center text-[var(--color-text)] shadow-lg hover:bg-[var(--color-primary)] hover:text-white transition-all opacity-100"
+                                aria-label="Previous testimonial"
+                            >
+                                ←
+                            </button>
+                            <button
+                                onClick={() => scroll('right')}
+                                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 rounded-full bg-[var(--color-surface)] border border-[var(--glass-border)] flex items-center justify-center text-[var(--color-text)] shadow-lg hover:bg-[var(--color-primary)] hover:text-white transition-all opacity-100"
+                                aria-label="Next testimonial"
+                            >
+                                →
+                            </button>
+                        </>
+                    )}
 
                     {/* Carousel Container */}
-                    <div
-                        ref={scrollContainerRef}
-                        className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-6 pb-4 px-2"
-                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    >
-                        {displayTestimonials.map((testimonial, index) => (
-                            <div
-                                key={testimonial.id || index}
-                                className="min-w-full md:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)] snap-center flex"
-                            >
-                                <Card className="flex flex-col w-full h-full">
-                                    <div className="flex items-center gap-1 mb-4">
-                                        {[...Array(5)].map((_, i) => (
-                                            <span
-                                                key={i}
-                                                className={`text-lg ${i < (testimonial.rating || 5)
-                                                    ? 'text-yellow-400'
-                                                    : 'text-[var(--color-surface-light)]'
-                                                    }`}
-                                            >
-                                                ★
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <p className="text-[var(--color-text)] italic mb-4 flex-1">
-                                        "{testimonial.content}"
-                                    </p>
-                                    <div className="border-t border-[var(--glass-border)] pt-4">
-                                        <p className="font-semibold">{testimonial.authorName || testimonial.name}</p>
-                                        <p className="text-sm text-[var(--color-text-muted)]">
-                                            {testimonial.authorRole}
+                    {isLoading ? (
+                        <Card className="text-center py-10" hover={false}>
+                            <p className="text-[var(--color-text-muted)]">Loading testimonials...</p>
+                        </Card>
+                    ) : displayTestimonials.length === 0 ? (
+                        <Card className="text-center py-10" hover={false}>
+                            <p className="text-[var(--color-text-muted)]">{t('testimonials.empty')}</p>
+                        </Card>
+                    ) : (
+                        <div
+                            ref={scrollContainerRef}
+                            className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-6 pb-4 px-2"
+                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                        >
+                            {displayTestimonials.map((testimonial, index) => (
+                                <div
+                                    key={testimonial.id || index}
+                                    className="min-w-full md:min-w-[calc(50%-12px)] lg:min-w-[calc(33.333%-16px)] snap-center flex"
+                                >
+                                    <Card className="flex flex-col w-full h-full">
+                                        <div className="flex items-center gap-1 mb-4">
+                                            {[...Array(5)].map((_, i) => (
+                                                <span
+                                                    key={i}
+                                                    className={`text-lg ${i < (testimonial.rating || 5)
+                                                        ? 'text-yellow-400'
+                                                        : 'text-[var(--color-surface-light)]'
+                                                        }`}
+                                                >
+                                                    ★
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <p className="text-[var(--color-text)] italic mb-4 flex-1">
+                                            "{testimonial.content}"
                                         </p>
-                                    </div>
-                                </Card>
-                            </div>
-                        ))}
-                    </div>
+                                        <div className="border-t border-[var(--glass-border)] pt-4">
+                                            <p className="font-semibold">{testimonial.authorName || testimonial.name}</p>
+                                            <p className="text-sm text-[var(--color-text-muted)]">
+                                                {testimonial.authorRole}
+                                            </p>
+                                        </div>
+                                    </Card>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Submit Testimonial Section */}

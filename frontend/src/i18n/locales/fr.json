@@ -41,6 +41,7 @@
     "testimonials": {
         "title": "Témoignages",
         "subtitle": "Ce que les gens disent de travailler avec moi",
+        "empty": "Aucun témoignage approuvé pour le moment. Soyez le premier à en soumettre un.",
         "submit": "Soumettre un Témoignage",
         "form": {
             "name": "Votre Nom",

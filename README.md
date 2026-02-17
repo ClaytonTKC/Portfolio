@@ -165,6 +165,9 @@ Portfolio/
 | `CONTACT_RATE_LIMIT_MAX_PER_DAY` | Max contact submissions per IP per day | `20` |
 | `CONTACT_MIN_SUBMIT_SECONDS` | Minimum form-fill time required before submit | `3` |
 | `CONTACT_DUPLICATE_WINDOW_HOURS` | Duplicate message block window (same email + content hash) | `24` |
+| `ADMIN_LOGIN_MAX_ATTEMPTS` | Failed admin login attempts allowed per IP before temporary block | `5` |
+| `ADMIN_LOGIN_BLOCK_MINUTES` | Admin login block duration in minutes after too many failures | `15` |
+| `ADMIN_LOGIN_ATTEMPT_WINDOW_MINUTES` | Rolling window used to count failed admin login attempts | `15` |
 
 ### Frontend
 | Variable | Description | Default |

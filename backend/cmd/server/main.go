@@ -35,7 +35,7 @@ func main() {
 
 	// Initialize handlers
 	healthHandler := handler.NewHealthHandler()
-	adminHandler := handler.NewAdminHandler(repo)
+	adminHandler := handler.NewAdminHandler(repo, cfg)
 	portfolioHandler := handler.NewPortfolioHandler(repo, cfg)
 
 	// Initialize router

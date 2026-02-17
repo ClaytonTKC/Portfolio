@@ -3,20 +3,26 @@ package handler
 import (
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/portfolio/backend/internal/config"
 	"github.com/portfolio/backend/internal/middleware"
 	"github.com/portfolio/backend/internal/model"
 	"github.com/portfolio/backend/internal/repository/postgres"
-	"time"
 )
 
 type AdminHandler struct {
-	repo *postgres.Repository
+	repo            *postgres.Repository
+	loginProtection *AdminLoginProtection
 }
 
-func NewAdminHandler(repo *postgres.Repository) *AdminHandler {
-	return &AdminHandler{repo: repo}
+func NewAdminHandler(repo *postgres.Repository, cfg *config.Config) *AdminHandler {
+	return &AdminHandler{
+		repo:            repo,
+		loginProtection: NewAdminLoginProtection(cfg),
+	}
 }
 
 func (h *AdminHandler) Login(c *gin.Context) {
@@ -26,11 +32,25 @@ func (h *AdminHandler) Login(c *gin.Context) {
 		return
 	}
 
+	now := time.Now().UTC()
+	clientIP := c.ClientIP()
+	if remaining, blocked := h.loginProtection.GetBlockRemaining(clientIP, now); blocked {
+		retryAfter := max(1, int(remaining.Seconds()))
+		c.Header("Retry-After", strconv.Itoa(retryAfter))
+		c.JSON(http.StatusTooManyRequests, gin.H{
+			"error":            "Too many failed login attempts. Try again in " + strconv.Itoa(retryAfter) + " seconds.",
+			"retry_after_secs": retryAfter,
+		})
+		return
+	}
+
 	// Verify credentials against environment variables
 	adminUser := os.Getenv("ADMIN_USER")
 	adminPassword := os.Getenv("ADMIN_PASSWORD")
 
 	if req.Email == adminUser && req.Password == adminPassword {
+		h.loginProtection.RegisterSuccess(clientIP)
+
 		user := &model.Admin{
 			ID:    "admin-1",
 			Email: req.Email,
@@ -48,6 +68,16 @@ func (h *AdminHandler) Login(c *gin.Context) {
 			Admin: *user,
 		}
 		c.JSON(http.StatusOK, response)
+		return
+	}
+
+	if remaining, blocked := h.loginProtection.RegisterFailure(clientIP, now); blocked {
+		retryAfter := max(1, int(remaining.Seconds()))
+		c.Header("Retry-After", strconv.Itoa(retryAfter))
+		c.JSON(http.StatusTooManyRequests, gin.H{
+			"error":            "Too many failed login attempts. Try again in " + strconv.Itoa(retryAfter) + " seconds.",
+			"retry_after_secs": retryAfter,
+		})
 		return
 	}
 

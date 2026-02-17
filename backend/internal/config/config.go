@@ -19,6 +19,9 @@ type Config struct {
 	ContactRateLimitMaxPerDay    int
 	ContactMinSubmitSeconds      int
 	ContactDuplicateWindowHours  int
+	AdminLoginMaxAttempts        int
+	AdminLoginBlockMinutes       int
+	AdminLoginAttemptWindowMinutes int
 }
 
 func Load() *Config {
@@ -40,6 +43,9 @@ func Load() *Config {
 		ContactRateLimitMaxPerDay:    getEnvInt("CONTACT_RATE_LIMIT_MAX_PER_DAY", 20),
 		ContactMinSubmitSeconds:      getEnvInt("CONTACT_MIN_SUBMIT_SECONDS", 3),
 		ContactDuplicateWindowHours:  getEnvInt("CONTACT_DUPLICATE_WINDOW_HOURS", 24),
+		AdminLoginMaxAttempts:        getEnvInt("ADMIN_LOGIN_MAX_ATTEMPTS", 5),
+		AdminLoginBlockMinutes:       getEnvInt("ADMIN_LOGIN_BLOCK_MINUTES", 15),
+		AdminLoginAttemptWindowMinutes: getEnvInt("ADMIN_LOGIN_ATTEMPT_WINDOW_MINUTES", 15),
 	}
 }
 

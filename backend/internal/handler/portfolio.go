@@ -534,7 +534,19 @@ func (h *PortfolioHandler) DeleteTestimonial(c *gin.Context) {
 func (h *PortfolioHandler) SubmitMessage(c *gin.Context) {
 	var req model.CreateMessageRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		errorText := err.Error()
+		switch {
+		case strings.Contains(errorText, "CreateMessageRequest.Name"):
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Please enter your name (at least 2 characters)."})
+		case strings.Contains(errorText, "CreateMessageRequest.Email"):
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Please enter a valid email address."})
+		case strings.Contains(errorText, "CreateMessageRequest.Content") && strings.Contains(errorText, "min"):
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Message must be at least 10 characters."})
+		case strings.Contains(errorText, "CreateMessageRequest.Content"):
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Please enter a valid message."})
+		default:
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid message payload."})
+		}
 		return
 	}
 

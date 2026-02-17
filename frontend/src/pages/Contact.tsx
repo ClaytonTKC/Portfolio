@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
 import { Button } from '../components/ui/Button';
 import { contentService } from '../services/content.service';
 
@@ -40,6 +41,25 @@ export const ContactPage: React.FC = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [turnstileToken, setTurnstileToken] = useState('');
     const [submitError, setSubmitError] = useState('');
+
+    const validateForm = (): string | null => {
+        const name = formData.name.trim();
+        const email = formData.email.trim();
+        const message = formData.message.trim();
+        const strictEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+        if (name.length < 2) {
+            return 'Please enter your name (at least 2 characters).';
+        }
+        if (!strictEmailPattern.test(email)) {
+            return 'Please enter a valid email address.';
+        }
+        if (message.length < 10) {
+            return 'Message must be at least 10 characters.';
+        }
+
+        return null;
+    };
 
     React.useEffect(() => {
         const fetchInfo = async () => {
@@ -119,6 +139,12 @@ export const ContactPage: React.FC = () => {
         e.preventDefault();
         setSubmitError('');
 
+        const validationError = validateForm();
+        if (validationError) {
+            setSubmitError(validationError);
+            return;
+        }
+
         if (turnstileSiteKey && !turnstileToken) {
             setSubmitError('Please complete the captcha challenge before sending your message.');
             return;
@@ -144,7 +170,11 @@ export const ContactPage: React.FC = () => {
             }
         } catch (error) {
             console.error('Failed to submit message:', error);
-            setSubmitError('Failed to send message. Please try again.');
+            if (axios.isAxiosError(error) && typeof error.response?.data?.error === 'string') {
+                setSubmitError(error.response.data.error);
+            } else {
+                setSubmitError('Failed to send message. Please try again.');
+            }
         } finally {
             setIsSubmitting(false);
         }
@@ -224,6 +254,7 @@ export const ContactPage: React.FC = () => {
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
+                                        minLength={2}
                                         required
                                         className="form-input"
                                         placeholder={t('placeholders.name')}
@@ -255,6 +286,7 @@ export const ContactPage: React.FC = () => {
                                         name="message"
                                         value={formData.message}
                                         onChange={handleChange}
+                                        minLength={10}
                                         required
                                         rows={5}
                                         className="form-input resize-none"

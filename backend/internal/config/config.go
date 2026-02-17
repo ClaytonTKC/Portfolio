@@ -16,7 +16,7 @@ type Config struct {
 
 func Load() *Config {
 	allowedOrigins := parseCSVEnv("ALLOWED_ORIGINS")
-	if frontendURL := strings.TrimSpace(os.Getenv("FRONTEND_URL")); frontendURL != "" {
+	if frontendURL := normalizeOrigin(os.Getenv("FRONTEND_URL")); frontendURL != "" {
 		allowedOrigins = append(allowedOrigins, frontendURL)
 	}
 
@@ -39,9 +39,9 @@ func parseCSVEnv(key string) []string {
 	parts := strings.Split(raw, ",")
 	values := make([]string, 0, len(parts))
 	for _, part := range parts {
-		trimmed := strings.TrimSpace(part)
-		if trimmed != "" {
-			values = append(values, trimmed)
+		normalized := normalizeOrigin(part)
+		if normalized != "" {
+			values = append(values, normalized)
 		}
 	}
 
@@ -61,6 +61,24 @@ func uniqueValues(values []string) []string {
 	}
 
 	return unique
+}
+
+func normalizeOrigin(origin string) string {
+	trimmed := strings.TrimSpace(origin)
+	if trimmed == "" {
+		return ""
+	}
+
+	noTrailingSlash := strings.TrimRight(trimmed, "/")
+	if noTrailingSlash == "*" {
+		return noTrailingSlash
+	}
+
+	if strings.HasPrefix(noTrailingSlash, "http://") || strings.HasPrefix(noTrailingSlash, "https://") {
+		return noTrailingSlash
+	}
+
+	return "https://" + noTrailingSlash
 }
 
 func getEnv(key, defaultValue string) string {

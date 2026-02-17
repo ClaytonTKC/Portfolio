@@ -163,7 +163,7 @@ Portfolio/
 ### Frontend
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `VITE_API_URL` | Backend API URL | `http://localhost:8080/api` |
+| `VITE_API_URL` | Backend API URL (include `/api`) | `http://localhost:8080/api` |
 
 ## Production Deployment
 
@@ -175,6 +175,13 @@ export JWT_SECRET=your-jwt-secret
 # Deploy with production compose
 docker-compose -f docker-compose.prod.yml up -d
 ```
+
+### Vercel + Railway
+
+1. In Vercel, set `VITE_API_URL` to your Railway backend URL, for example `https://your-service.up.railway.app/api`.
+2. In Railway, set `ALLOWED_ORIGINS` to your frontend origin(s), for example `https://claytkc.dev,https://www.claytkc.dev`.
+3. In Railway, set `FRONTEND_URL` to the same primary frontend origin, for example `https://claytkc.dev`.
+4. Redeploy both services after updating environment variables.
 
 ## License
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { buildApiUrl } from '../../api/url';
 import { Button } from '../ui/Button';
 
 export const Hero: React.FC = () => {
@@ -8,17 +9,22 @@ export const Hero: React.FC = () => {
     const navigate = useNavigate();
 
     const [profilePic, setProfilePic] = React.useState<string | null>(null);
+    const profilePictureUrl = React.useMemo(() => buildApiUrl('/public/profile-picture'), []);
+    const resumeUrl = React.useMemo(
+        () => buildApiUrl(`/public/resume?lang=${i18n.language?.startsWith('fr') ? 'fr' : 'en'}`),
+        [i18n.language]
+    );
 
     React.useEffect(() => {
         // Check if profile picture exists
-        fetch('/api/public/profile-picture')
+        fetch(profilePictureUrl)
             .then(res => {
                 if (res.ok) {
-                    setProfilePic('/api/public/profile-picture');
+                    setProfilePic(profilePictureUrl);
                 }
             })
             .catch(err => console.error('Failed to check profile picture:', err));
-    }, []);
+    }, [profilePictureUrl]);
 
     const scrollToProjects = () => {
         document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
@@ -50,7 +56,7 @@ export const Hero: React.FC = () => {
                                 {t('hero.contact')}
                             </Button>
                             <a
-                                href={`/api/public/resume?lang=${i18n.language?.startsWith('fr') ? 'fr' : 'en'}`}
+                                href={resumeUrl}
                                 download
                                 className="btn-secondary flex items-center"
                                 target="_blank"

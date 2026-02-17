@@ -15,13 +15,26 @@ export const Header: React.FC = () => {
     ];
 
     const isActive = (path: string) => location.pathname === path;
+    const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const handleHomeClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+        setIsMenuOpen(false);
+        if (location.pathname === '/') {
+            event.preventDefault();
+            scrollToTop();
+            return;
+        }
+
+        // Allow navigation to "/" first, then scroll the destination page to top.
+        setTimeout(scrollToTop, 0);
+    };
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-lg bg-[var(--color-background)]/80 border-b border-[var(--glass-border)]">
             <div className="container mx-auto px-6">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2 group">
+                    <Link to="/" onClick={handleHomeClick} className="flex items-center gap-2 group">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center font-bold text-white text-lg transition-transform group-hover:scale-110">
                             P
                         </div>
@@ -34,6 +47,7 @@ export const Header: React.FC = () => {
                             <Link
                                 key={item.path}
                                 to={item.path}
+                                onClick={item.path === '/' ? handleHomeClick : undefined}
                                 className={`relative py-2 px-1 font-medium transition-colors ${isActive(item.path)
                                     ? 'text-[var(--color-primary)]'
                                     : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
@@ -93,7 +107,7 @@ export const Header: React.FC = () => {
                             <Link
                                 key={item.path}
                                 to={item.path}
-                                onClick={() => setIsMenuOpen(false)}
+                                onClick={item.path === '/' ? handleHomeClick : () => setIsMenuOpen(false)}
                                 className={`block py-3 px-4 rounded-lg font-medium transition-colors ${isActive(item.path)
                                     ? 'bg-[var(--color-surface)] text-[var(--color-primary)]'
                                     : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]'

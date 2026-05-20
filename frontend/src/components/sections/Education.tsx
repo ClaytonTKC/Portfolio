@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card } from '../ui/Card';
 import { contentService, type Education as EducationType } from '../../services/content.service';
-//
+// Education section
 
 export const Education: React.FC = () => {
     const { t, i18n } = useTranslation();

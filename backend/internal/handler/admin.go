@@ -119,6 +119,10 @@ func (h *AdminHandler) UpdateContactInfo(c *gin.Context) {
 		GitHub:   req.GitHub,
 		Twitter:  req.Twitter,
 		Website:  req.Website,
+		Bio:          req.Bio,
+		BioFr:        req.BioFr,
+		AboutTitle:   req.AboutTitle,
+		AboutTitleFr: req.AboutTitleFr,
 	}
 
 	updated, err := h.repo.UpdateContactInfo(c.Request.Context(), info)

@@ -15,6 +15,10 @@
     "contact": "Get In Touch",
     "resume": "Download CV"
   },
+  "about": {
+    "title": "About Me",
+    "subtitle": "Get to know more about my background, passion, and what I bring to the table."
+  },
   "skills": {
     "title": "Skills & Expertise",
     "subtitle": "Technologies and tools I work with to bring ideas to life"

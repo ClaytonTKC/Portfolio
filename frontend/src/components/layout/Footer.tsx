@@ -28,16 +28,17 @@ export const Footer: React.FC = () => {
 
     return (
         <footer className="relative z-10 border-t border-[var(--glass-border)] bg-[var(--color-background)]/80 backdrop-blur-lg">
-            <div className="container mx-auto px-6 py-12">
+            <div className="container mx-auto px-6 py-8">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                    {/* Logo & Copyright */}
-                    <div className="flex flex-col items-center md:items-start gap-2">
+                    {/* Logo & Copyright (Aligned horizontally) */}
+                    <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center font-bold text-white text-sm">
                                 P
                             </div>
                             <span className="font-semibold">Portfolio</span>
                         </div>
+                        <span className="hidden sm:inline text-[var(--glass-border)]">|</span>
                         <p className="text-sm text-[var(--color-text-muted)]">
                             © {currentYear} Portfolio. {t('footer.rights')}.
                         </p>
@@ -67,11 +68,6 @@ export const Footer: React.FC = () => {
                             </a>
                         ))}
                     </div>
-
-                    {/* Built with */}
-                    <p className="text-sm text-[var(--color-text-muted)]">
-                        {t('footer.builtWith')} ❤️ & React
-                    </p>
                 </div>
             </div>
         </footer>

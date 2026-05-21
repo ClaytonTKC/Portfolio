@@ -106,7 +106,7 @@ export const AdminDashboard: React.FC = () => {
                     >
                         Update Resume
                     </Button>
-                    <Button variant="secondary" onClick={() => navigate('/admin/contact-info')}>Edit Contact Info</Button>
+                    <Button variant="secondary" onClick={() => navigate('/admin/contact-info')}>Edit Contact & About Me</Button>
                 </div>
             </Card>
 

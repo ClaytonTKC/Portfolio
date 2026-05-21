@@ -197,7 +197,7 @@ ON CONFLICT (email) DO NOTHING;
 
 -- Insert default contact info
 INSERT INTO contact_info (email, location)
-VALUES ('contact@portfolio.com', 'San Francisco, CA')
+VALUES ('clay@portfolio.com', 'Montreal, QC')
 ON CONFLICT DO NOTHING;
 
 -- Migration: 002_add_subject.sql

@@ -76,14 +76,18 @@ INSERT INTO testimonials (author_name, author_role, author_email, content, ratin
 ('Michael Chen', 'CTO', 'michael@innovate.io', 'Exceptional technical skills and maintainable code quality.', 5, 'approved');
 
 -- Ensure contact info has one usable row
-INSERT INTO contact_info (email, phone, location, linkedin, github, website)
+INSERT INTO contact_info (email, phone, location, linkedin, github, website, bio, bio_fr, about_title, about_title_fr)
 VALUES (
-  'JJR@portfolio.com',
+  'clay@portfolio.com',
   '',
   'Montreal, QC',
   'https://www.linkedin.com/',
   'https://github.com/',
-  'https://claytkc.dev'
+  'https://claytkc.dev',
+  'I am a passionate software developer specializing in building modern web applications. With expertise in Go, React, and PostgreSQL, I enjoy solving complex problems and crafting robust, clean software that provides exceptional user experiences.',
+  'Je suis un développeur logiciel passionné spécialisé dans la création d''applications web modernes. Fort d''une expertise en Go, React et PostgreSQL, j''aime résoudre des problèmes complexes et concevoir des logiciels robustes et propres offrant d''exceptionnelles expériences utilisateur.',
+  'Crafting elegant solutions through code',
+  'Concevoir des solutions élégantes par le code'
 )
 ON CONFLICT DO NOTHING;
 

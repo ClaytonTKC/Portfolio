@@ -32,6 +32,10 @@ type ContactInfo struct {
 	GitHub    string    `json:"github"`
 	Twitter   string    `json:"twitter"`
 	Website   string    `json:"website"`
+	Bio       string    `json:"bio"`
+	BioFr     string    `json:"bioFr"`
+	AboutTitle   string    `json:"aboutTitle"`
+	AboutTitleFr string    `json:"aboutTitleFr"`
 	UpdatedAt time.Time `json:"updatedAt"`
 }
 
@@ -43,4 +47,8 @@ type UpdateContactInfoRequest struct {
 	GitHub   string `json:"github"`
 	Twitter  string `json:"twitter"`
 	Website  string `json:"website"`
+	Bio      string `json:"bio"`
+	BioFr    string `json:"bioFr"`
+	AboutTitle   string `json:"aboutTitle"`
+	AboutTitleFr string `json:"aboutTitleFr"`
 }

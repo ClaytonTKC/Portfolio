@@ -43,7 +43,7 @@ export const Contact: React.FC = () => {
                                 <div>
                                     <p className="font-medium">{t('contact_info.emailLabel')}</p>
                                     <p className="text-[var(--color-text-muted)]">
-                                        claudio@portfolio.com
+                                        clay@portfolio.com
                                     </p>
                                 </div>
                             </div>

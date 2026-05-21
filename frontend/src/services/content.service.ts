@@ -107,6 +107,10 @@ export interface ContactInfo {
     github: string;
     twitter: string;
     website: string;
+    bio: string;
+    bioFr: string;
+    aboutTitle?: string;
+    aboutTitleFr?: string;
 }
 
 export const contentService = {

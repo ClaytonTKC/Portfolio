@@ -8,7 +8,10 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'portfolio');
 -- Connect to portfolio database and run migrations
 \c portfolio;
 
--- Run initial schema migration
+-- Run migrations in order
 \i /docker-entrypoint-initdb.d/migrations/001_initial_schema.sql
-\i /docker-entrypoint-initdb.d/migrations/002_add_subject.sql
-\i /docker-entrypoint-initdb.d/migrations/003_seed_testimonials.sql
+\i /docker-entrypoint-initdb.d/migrations/002_add_french_fields.sql
+\i /docker-entrypoint-initdb.d/migrations/003_add_skill_visibility.sql
+\i /docker-entrypoint-initdb.d/migrations/004_add_project_french_fields.sql
+\i /docker-entrypoint-initdb.d/migrations/005_add_bio_fields.sql
+\i /docker-entrypoint-initdb.d/migrations/006_add_about_title.sql

@@ -430,12 +430,13 @@ func (r *Repository) DeleteMessage(ctx context.Context, id string) error {
 // === Contact Info ===
 
 func (r *Repository) GetContactInfo(ctx context.Context) (model.ContactInfo, error) {
-	query := `SELECT id, email, COALESCE(phone, ''), COALESCE(location, ''), COALESCE(linkedin, ''), COALESCE(github, ''), COALESCE(twitter, ''), COALESCE(website, ''), updated_at FROM contact_info LIMIT 1`
+	query := `SELECT id, email, COALESCE(phone, ''), COALESCE(location, ''), COALESCE(linkedin, ''), COALESCE(github, ''), COALESCE(twitter, ''), COALESCE(website, ''), COALESCE(bio, ''), COALESCE(bio_fr, ''), COALESCE(about_title, ''), COALESCE(about_title_fr, ''), updated_at FROM contact_info LIMIT 1`
 	
 	var info model.ContactInfo
 	err := r.db.QueryRow(ctx, query).Scan(
 		&info.ID, &info.Email, &info.Phone, &info.Location, 
-		&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website, &info.UpdatedAt,
+		&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website,
+		&info.Bio, &info.BioFr, &info.AboutTitle, &info.AboutTitleFr, &info.UpdatedAt,
 	)
 	
 	if err != nil {
@@ -459,23 +460,25 @@ func (r *Repository) UpdateContactInfo(ctx context.Context, info model.ContactIn
 	var query string
 	if existing.ID == "" {
 		// Create new
-		query = `INSERT INTO contact_info (email, phone, location, linkedin, github, twitter, website, updated_at) 
-				VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP) 
-				RETURNING id, email, phone, location, linkedin, github, twitter, website, updated_at`
+		query = `INSERT INTO contact_info (email, phone, location, linkedin, github, twitter, website, bio, bio_fr, about_title, about_title_fr, updated_at) 
+				VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, CURRENT_TIMESTAMP) 
+				RETURNING id, email, phone, location, linkedin, github, twitter, website, bio, bio_fr, about_title, about_title_fr, updated_at`
 		
-		err = r.db.QueryRow(ctx, query, info.Email, info.Phone, info.Location, info.LinkedIn, info.GitHub, info.Twitter, info.Website).Scan(
+		err = r.db.QueryRow(ctx, query, info.Email, info.Phone, info.Location, info.LinkedIn, info.GitHub, info.Twitter, info.Website, info.Bio, info.BioFr, info.AboutTitle, info.AboutTitleFr).Scan(
 			&info.ID, &info.Email, &info.Phone, &info.Location, 
-			&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website, &info.UpdatedAt,
+			&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website,
+			&info.Bio, &info.BioFr, &info.AboutTitle, &info.AboutTitleFr, &info.UpdatedAt,
 		)
 	} else {
 		// Update existing
-		query = `UPDATE contact_info SET email=$1, phone=$2, location=$3, linkedin=$4, github=$5, twitter=$6, website=$7, updated_at=CURRENT_TIMESTAMP 
-				WHERE id=$8 
-				RETURNING id, email, phone, location, linkedin, github, twitter, website, updated_at`
+		query = `UPDATE contact_info SET email=$1, phone=$2, location=$3, linkedin=$4, github=$5, twitter=$6, website=$7, bio=$8, bio_fr=$9, about_title=$10, about_title_fr=$11, updated_at=CURRENT_TIMESTAMP 
+				WHERE id=$12 
+				RETURNING id, email, phone, location, linkedin, github, twitter, website, bio, bio_fr, about_title, about_title_fr, updated_at`
 				
-		err = r.db.QueryRow(ctx, query, info.Email, info.Phone, info.Location, info.LinkedIn, info.GitHub, info.Twitter, info.Website, existing.ID).Scan(
+		err = r.db.QueryRow(ctx, query, info.Email, info.Phone, info.Location, info.LinkedIn, info.GitHub, info.Twitter, info.Website, info.Bio, info.BioFr, info.AboutTitle, info.AboutTitleFr, existing.ID).Scan(
 			&info.ID, &info.Email, &info.Phone, &info.Location, 
-			&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website, &info.UpdatedAt,
+			&info.LinkedIn, &info.GitHub, &info.Twitter, &info.Website,
+			&info.Bio, &info.BioFr, &info.AboutTitle, &info.AboutTitleFr, &info.UpdatedAt,
 		)
 	}
 	

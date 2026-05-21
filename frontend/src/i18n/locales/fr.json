@@ -15,6 +15,10 @@
         "contact": "Me Contacter",
         "resume": "Télécharger CV"
     },
+    "about": {
+        "title": "À Propos de Moi",
+        "subtitle": "Découvrez mon parcours, ma passion et ce que je peux apporter à vos projets."
+    },
     "skills": {
         "title": "Compétences & Expertise",
         "subtitle": "Technologies et outils que j'utilise pour donner vie aux idées"

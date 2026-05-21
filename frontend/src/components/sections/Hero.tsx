@@ -3,17 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { buildApiUrl } from '../../api/url';
 import { Button } from '../ui/Button';
+import { contentService } from '../../services/content.service';
 
 export const Hero: React.FC = () => {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
 
     const [profilePic, setProfilePic] = React.useState<string | null>(null);
+    const [bio, setBio] = React.useState<string | null>(null);
     const profilePictureUrl = React.useMemo(() => buildApiUrl('/public/profile-picture'), []);
     const resumeUrl = React.useMemo(
         () => buildApiUrl(`/public/resume?lang=${i18n.language?.startsWith('fr') ? 'fr' : 'en'}`),
         [i18n.language]
     );
+
+    const isFr = i18n.language?.startsWith('fr');
 
     React.useEffect(() => {
         // Check if profile picture exists
@@ -25,6 +29,15 @@ export const Hero: React.FC = () => {
             })
             .catch(err => console.error('Failed to check profile picture:', err));
     }, [profilePictureUrl]);
+
+    React.useEffect(() => {
+        contentService.getContactInfo()
+            .then(info => {
+                const text = isFr ? info.bioFr : info.bio;
+                if (text && text.trim()) setBio(text.trim());
+            })
+            .catch(() => { /* fall back to i18n key */ });
+    }, [isFr]);
 
     const scrollToProjects = () => {
         document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
@@ -46,7 +59,7 @@ export const Hero: React.FC = () => {
                             </span>
                         </h1>
                         <p className="text-lg text-[var(--color-text-muted)] mb-8 max-w-lg">
-                            {t('hero.subtitle')}
+                            {bio ?? t('hero.subtitle')}
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Button variant="primary" onClick={scrollToProjects}>

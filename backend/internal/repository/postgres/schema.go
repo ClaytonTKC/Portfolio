@@ -32,6 +32,10 @@ func ensureSchema(pool *pgxpool.Pool) error {
 			github VARCHAR(255),
 			twitter VARCHAR(255),
 			website VARCHAR(500),
+			bio TEXT DEFAULT '',
+			bio_fr TEXT DEFAULT '',
+			about_title TEXT DEFAULT '',
+			about_title_fr TEXT DEFAULT '',
 			updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 		);`,
 		`CREATE TABLE IF NOT EXISTS skills (
@@ -138,6 +142,10 @@ func ensureSchema(pool *pgxpool.Pool) error {
 		`ALTER TABLE education ADD COLUMN IF NOT EXISTS description_fr TEXT DEFAULT '';`,
 		`ALTER TABLE messages ADD COLUMN IF NOT EXISTS subject VARCHAR(255) DEFAULT '';`,
 		`ALTER TABLE messages ADD COLUMN IF NOT EXISTS content_hash VARCHAR(64) DEFAULT '';`,
+		`ALTER TABLE contact_info ADD COLUMN IF NOT EXISTS bio TEXT DEFAULT '';`,
+		`ALTER TABLE contact_info ADD COLUMN IF NOT EXISTS bio_fr TEXT DEFAULT '';`,
+		`ALTER TABLE contact_info ADD COLUMN IF NOT EXISTS about_title TEXT DEFAULT '';`,
+		`ALTER TABLE contact_info ADD COLUMN IF NOT EXISTS about_title_fr TEXT DEFAULT '';`,
 
 		`CREATE INDEX IF NOT EXISTS idx_skills_sort_order ON skills(sort_order);`,
 		`CREATE INDEX IF NOT EXISTS idx_projects_sort_order ON projects(sort_order);`,
